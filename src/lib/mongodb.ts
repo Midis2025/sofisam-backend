@@ -37,11 +37,17 @@ export function classifyMongoError(err: unknown): { category: string; diagnostic
     };
   }
 
-  if (name === 'MongoServerSelectionError' || msg.includes('Server selection timed out')) {
+  if (
+    name.includes('ServerSelection') ||
+    msg.includes('Server selection timed out') ||
+    msg.includes('Could not connect to any servers') ||
+    msg.includes('whitelist') ||
+    msg.includes('not whitelisted')
+  ) {
     return {
       category: 'Server selection timeout / Network access denied',
       diagnostic:
-        'Connection timed out after 10000ms waiting for cluster response. In Vercel serverless environments, this typically indicates that MongoDB Atlas Network Access is not allowing connections from Vercel dynamic IPs (0.0.0.0/0 required) or the cluster is paused.',
+        'Connection timed out after 10000ms. MongoDB Atlas Network Access is dropping incoming connections from Vercel dynamic serverless IPs. MongoDB Atlas requires allowing IP 0.0.0.0/0 under Network Access.',
     };
   }
 
@@ -66,9 +72,10 @@ export function classifyMongoError(err: unknown): { category: string; diagnostic
     };
   }
 
+  const sanitizedMsg = msg.replace(/\/\/[^@]+@/, '//***:***@');
   return {
     category: 'Database unavailable',
-    diagnostic: 'Database cluster is unreachable or returned an unclassified driver error.',
+    diagnostic: `Driver error [${name || 'Error'}]: ${sanitizedMsg.slice(0, 160)}`,
   };
 }
 
