@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
   AreaChart,
   Area,
@@ -14,27 +14,29 @@ import {
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card';
 import { useMounted } from '@/lib/useMounted';
 
-interface MonthlyData {
-  month: string;
+export interface ChartDataPoint {
+  label: string;
+  date?: string;
+  month?: string;
   enquiries: number;
   contacts: number;
   total: number;
 }
 
 interface EnquiryChartProps {
-  data: MonthlyData[];
+  data: ChartDataPoint[];
+  period?: '1m' | '3m';
+  onPeriodChange?: (period: '1m' | '3m') => void;
+  isLoading?: boolean;
 }
 
-export function EnquiryChart({ data }: EnquiryChartProps) {
+export function EnquiryChart({
+  data,
+  period = '1m',
+  onPeriodChange,
+  isLoading = false,
+}: EnquiryChartProps) {
   const mounted = useMounted();
-  const [timeRange, setTimeRange] = useState<'6m' | '3m' | '1y'>('6m');
-
-  const filteredData = React.useMemo(() => {
-    if (timeRange === '3m') {
-      return data.slice(-3);
-    }
-    return data;
-  }, [data, timeRange]);
 
   if (!mounted) {
     return (
@@ -49,37 +51,47 @@ export function EnquiryChart({ data }: EnquiryChartProps) {
       <CardHeader className="flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <CardTitle>Enquiry & Contact Volume</CardTitle>
-          <CardDescription>Monthly trend of incoming private mandates and general inquiries</CardDescription>
+          <CardDescription>
+            {period === '1m'
+              ? 'Daily trend of incoming private mandates and general inquiries (Latest 30 Days)'
+              : 'Monthly trend of incoming private mandates and general inquiries (Latest 3 Months)'}
+          </CardDescription>
         </div>
 
-        {/* Range Selector */}
+        {/* Range Selector: Last 1M & Last 3M */}
         <div className="flex items-center gap-1 bg-[#F6F7F9] p-1 rounded-lg border border-[#E5E9EF]">
           <button
-            onClick={() => setTimeRange('3m')}
+            type="button"
+            onClick={() => onPeriodChange?.('1m')}
             className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
-              timeRange === '3m'
+              period === '1m'
+                ? 'bg-white text-[#14243A] shadow-xs'
+                : 'text-[#7C8795] hover:text-[#182536]'
+            }`}
+          >
+            Last 1M
+          </button>
+          <button
+            type="button"
+            onClick={() => onPeriodChange?.('3m')}
+            className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
+              period === '3m'
                 ? 'bg-white text-[#14243A] shadow-xs'
                 : 'text-[#7C8795] hover:text-[#182536]'
             }`}
           >
             Last 3M
           </button>
-          <button
-            onClick={() => setTimeRange('6m')}
-            className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
-              timeRange === '6m'
-                ? 'bg-white text-[#14243A] shadow-xs'
-                : 'text-[#7C8795] hover:text-[#182536]'
-            }`}
-          >
-            Last 6M
-          </button>
         </div>
       </CardHeader>
 
-      <div className="p-6 pt-2 h-[320px] w-full">
+      <div
+        className={`p-6 pt-2 h-[320px] w-full transition-opacity duration-200 ${
+          isLoading ? 'opacity-60' : 'opacity-100'
+        }`}
+      >
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={filteredData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="colorEnquiries" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#14243A" stopOpacity={0.25} />
@@ -92,11 +104,12 @@ export function EnquiryChart({ data }: EnquiryChartProps) {
             </defs>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E9EF" />
             <XAxis
-              dataKey="month"
+              dataKey="label"
               stroke="#7C8795"
-              fontSize={12}
+              fontSize={11}
               tickLine={false}
               axisLine={false}
+              minTickGap={16}
             />
             <YAxis
               stroke="#7C8795"

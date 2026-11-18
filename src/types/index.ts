@@ -107,7 +107,13 @@ export interface DashboardStats {
 }
 
 export interface AnalyticsVolume {
-  month: string;
+  label: string;
+  date?: string;
+  month?: string;
+  year?: number;
+  day?: number;
+  enquiries: number;
+  contacts: number;
   privateEnquiries: number;
   contactForms: number;
   total: number;
@@ -116,18 +122,31 @@ export interface AnalyticsVolume {
 export interface AnalyticsDistribution {
   status: EnquiryStatus;
   name: string;
+  value?: number;
   count: number;
   percentage: number;
   color?: string;
 }
 
 export interface DashboardAnalytics {
+  period?: '1m' | '3m';
+  periodLabel?: string;
+  volume?: AnalyticsVolume[];
   monthlyVolume: AnalyticsVolume[];
   statusDistribution: AnalyticsDistribution[];
+  formTypeDistribution?: {
+    name: string;
+    value: number;
+    color: string;
+    count?: number;
+  }[];
   channelDistribution: {
     privateEnquiries: number;
     contactForms: number;
+    privateOffice?: number;
+    contact?: number;
   };
+  totalPeriodEnquiries?: number;
 }
 
 export interface FilterState {

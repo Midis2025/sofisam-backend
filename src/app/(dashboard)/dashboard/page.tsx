@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { StatCard } from '@/components/dashboard/StatCard';
 import { EnquiryChart } from '@/components/dashboard/EnquiryChart';
@@ -25,7 +25,10 @@ interface StatsResponse {
 }
 
 interface AnalyticsResponse {
+  period?: '1m' | '3m';
+  periodLabel?: string;
   monthlyVolume: {
+    label: string;
     month: string;
     enquiries: number;
     contacts: number;
@@ -47,18 +50,23 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<StatsResponse | null>(null);
   const [analytics, setAnalytics] = useState<AnalyticsResponse | null>(null);
   const [recentEnquiries, setRecentEnquiries] = useState<Enquiry[]>([]);
+  const [period, setPeriod] = useState<'1m' | '3m'>('1m');
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isAnalyticsLoading, setIsAnalyticsLoading] = useState(false);
   const [lastRefreshedAt, setLastRefreshedAt] = useState<Date | null>(null);
+
+  const periodRef = useRef<'1m' | '3m'>('1m');
 
   const fetchDashboardData = useCallback(async (isBackground = false) => {
     if (!isBackground) {
       setIsRefreshing(true);
     }
+    const currentPeriod = periodRef.current;
     try {
       const [statsRes, analyticsRes, recentRes] = await Promise.all([
         fetch('/api/admin/dashboard/stats', { cache: 'no-store' }),
-        fetch('/api/admin/dashboard/analytics?period=6m', { cache: 'no-store' }),
+        fetch(`/api/admin/dashboard/analytics?period=${currentPeriod}`, { cache: 'no-store' }),
         fetch('/api/admin/dashboard/recent?limit=5', { cache: 'no-store' }),
       ]);
 
@@ -92,14 +100,37 @@ export default function DashboardPage() {
     }
   }, []);
 
-  // Initial load
+  const handlePeriodChange = useCallback(async (newPeriod: '1m' | '3m') => {
+    if (newPeriod === periodRef.current) return;
+    setPeriod(newPeriod);
+    periodRef.current = newPeriod;
+    setIsAnalyticsLoading(true);
+
+    try {
+      const res = await fetch(`/api/admin/dashboard/analytics?period=${newPeriod}`, {
+        cache: 'no-store',
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setAnalytics(data.data);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to switch analytics period:', err);
+    } finally {
+      setIsAnalyticsLoading(false);
+    }
+  }, []);
+
+  // Initial load with default 1m period
   useEffect(() => {
     let ignore = false;
     const loadInitial = async () => {
       try {
         const [statsRes, analyticsRes, recentRes] = await Promise.all([
           fetch('/api/admin/dashboard/stats', { cache: 'no-store' }),
-          fetch('/api/admin/dashboard/analytics?period=6m', { cache: 'no-store' }),
+          fetch('/api/admin/dashboard/analytics?period=1m', { cache: 'no-store' }),
           fetch('/api/admin/dashboard/recent?limit=5', { cache: 'no-store' }),
         ]);
 
@@ -143,7 +174,7 @@ export default function DashboardPage() {
     };
   }, []);
 
-  // 30-second live polling with tab visibility detection
+  // 30-second live polling respecting the current period
   useAutoPoll(() => fetchDashboardData(true), { interval: 30000 });
 
   return (
@@ -236,7 +267,12 @@ export default function DashboardPage() {
                 <div className="h-[280px] bg-slate-50 rounded"></div>
               </div>
             ) : (
-              <EnquiryChart data={analytics?.monthlyVolume || []} />
+              <EnquiryChart
+                data={analytics?.monthlyVolume || []}
+                period={period}
+                onPeriodChange={handlePeriodChange}
+                isLoading={isAnalyticsLoading}
+              />
             )}
           </div>
           <div>
@@ -249,6 +285,8 @@ export default function DashboardPage() {
               <EnquirySummary
                 statusData={analytics?.statusDistribution || []}
                 formTypeData={analytics?.formTypeDistribution || []}
+                period={period}
+                isLoading={isAnalyticsLoading}
               />
             )}
           </div>

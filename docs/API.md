@@ -262,9 +262,11 @@ Returns executive counts and 30-day percentage changes:
 }
 ```
 
-### `GET /api/admin/dashboard/analytics?period=6m`
-Query parameters: `period=3m|6m|12m` (default: `6m`).
-Returns monthly volume, status distribution, and form channel distribution.
+### `GET /api/admin/dashboard/analytics?period=1m`
+Query parameters: `period=1m|3m` (default: `1m`).
+- `period=1m`: Returns daily volume for the latest 30 rolling days (dates on X-axis).
+- `period=3m`: Returns monthly volume for the latest 3 calendar months (month labels on X-axis).
+- Both responses return status and channel distributions (`Private Office` vs `Contact`) filtered strictly to the selected period.
 
 ### `GET /api/admin/dashboard/recent?limit=5`
 Returns latest submissions sorted by `submittedAt: -1`.
