@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/mongodb';
+import connectToDatabase, { classifyMongoError } from '@/lib/mongodb';
 import mongoose from 'mongoose';
 
 export const dynamic = 'force-dynamic';
@@ -11,29 +11,44 @@ export async function GET() {
         {
           success: false,
           database: 'disconnected',
+          category: 'Missing environment variable',
           message: 'MONGODB_URI environment variable is not defined.',
         },
         { status: 503 }
       );
     }
 
-    // Connect to database using cached manager
+    // Attempt database connection
     await connectToDatabase();
 
-    // Perform database ping
     const db = mongoose.connection.db;
     if (!db) {
       return NextResponse.json(
         {
           success: false,
           database: 'disconnected',
+          category: 'Database unavailable',
           message: 'Database instance not initialized.',
         },
         { status: 503 }
       );
     }
 
-    await db.command({ ping: 1 });
+    // Execute real database ping
+    const pingResult = await db.command({ ping: 1 });
+    if (pingResult.ok !== 1) {
+      return NextResponse.json(
+        {
+          success: false,
+          database: 'disconnected',
+          category: 'Database unavailable',
+          message: 'MongoDB ping command did not return success status.',
+        },
+        { status: 503 }
+      );
+    }
+
+    console.log('✓ Database health check passed: ping successful');
 
     return NextResponse.json(
       {
@@ -45,14 +60,16 @@ export async function GET() {
       { status: 200 }
     );
   } catch (err: unknown) {
-    const error = err as { message?: string; name?: string };
-    console.error('Database health-check failed:', error?.message || err);
+    const classified = classifyMongoError(err);
+    console.error(`Database health-check failed [${classified.category}]: ${classified.diagnostic}`);
 
     return NextResponse.json(
       {
         success: false,
         database: 'disconnected',
+        category: classified.category,
         message: 'MongoDB connection failed',
+        diagnostic: classified.diagnostic,
       },
       { status: 503 }
     );

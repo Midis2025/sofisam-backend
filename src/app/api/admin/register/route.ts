@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import connectToDatabase from '@/lib/mongodb';
+import connectToDatabase, { classifyMongoError } from '@/lib/mongodb';
 import Admin from '@/models/Admin';
 import { createSession } from '@/lib/auth';
 import { registerSuperAdminSchema } from '@/lib/validation';
@@ -35,11 +35,12 @@ export async function POST(request: NextRequest) {
     try {
       await connectToDatabase();
     } catch (dbErr: unknown) {
-      console.error('Database connection failed during admin registration:', dbErr);
+      const classified = classifyMongoError(dbErr);
+      console.error(`Database connection failed during admin registration [${classified.category}]: ${classified.diagnostic}`);
       return NextResponse.json(
         {
           error:
-            'MongoDB connection error. Please verify MONGODB_URI in your environment configuration.',
+            'Database connection error. Please verify MongoDB Atlas connectivity and Network Access rules.',
         },
         { status: 503 }
       );

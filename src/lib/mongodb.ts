@@ -15,10 +15,67 @@ if (!global.mongooseCache) {
   global.mongooseCache = cached;
 }
 
+export interface MongoDiagnostic {
+  hasEnvUri: boolean;
+  schemeValid: boolean;
+  parsedHost: string;
+  connected: boolean;
+  errorCategory?: string;
+  diagnosticMessage?: string;
+}
+
+export function classifyMongoError(err: unknown): { category: string; diagnostic: string } {
+  const errorObj = err as { message?: string; name?: string; code?: number };
+  const msg = errorObj?.message || String(err);
+  const name = errorObj?.name || '';
+  const code = errorObj?.code;
+
+  if (!process.env.MONGODB_URI) {
+    return {
+      category: 'Missing environment variable',
+      diagnostic: 'MONGODB_URI is not defined in the environment configuration.',
+    };
+  }
+
+  if (name === 'MongoServerSelectionError' || msg.includes('Server selection timed out')) {
+    return {
+      category: 'Server selection timeout / Network access denied',
+      diagnostic:
+        'Connection timed out after 10000ms waiting for cluster response. In Vercel serverless environments, this typically indicates that MongoDB Atlas Network Access is not allowing connections from Vercel dynamic IPs (0.0.0.0/0 required) or the cluster is paused.',
+    };
+  }
+
+  if (name === 'MongoNetworkError' || msg.includes('ECONNREFUSED') || msg.includes('ETIMEDOUT') || msg.includes('connection timed out')) {
+    return {
+      category: 'Connection timeout',
+      diagnostic: 'Socket connection dropped or timed out before handshake completed. Check Atlas Network Access IP allowlist.',
+    };
+  }
+
+  if (msg.includes('querySrv ENOTFOUND') || msg.includes('querySrv ETIMEOUT') || msg.includes('ENOTFOUND')) {
+    return {
+      category: 'DNS/SRV resolution failure',
+      diagnostic: 'DNS resolver failed to find the MongoDB SRV record. Verify cluster hostname in MONGODB_URI.',
+    };
+  }
+
+  if (code === 8000 || msg.includes('bad auth') || msg.includes('Authentication failed') || msg.includes('auth error')) {
+    return {
+      category: 'Authentication failed',
+      diagnostic: 'MongoDB authentication failed. Check database username and password in Atlas Database Access. Special characters in password must be URL-encoded.',
+    };
+  }
+
+  return {
+    category: 'Database unavailable',
+    diagnostic: 'Database cluster is unreachable or returned an unclassified driver error.',
+  };
+}
+
 /**
  * Sanitizes and extracts the MongoDB connection URI
  */
-function getSanitizedMongoUri(): string {
+function getSanitizedMongoUri(): { uri: string; host: string } {
   let uri = process.env.MONGODB_URI || '';
 
   // Clean leading/trailing spaces or quotes
@@ -29,19 +86,30 @@ function getSanitizedMongoUri(): string {
     uri = uri.replace(/^MONGODB_URI=\s*/, '');
   }
 
+  const hasUri = Boolean(uri);
+  const startsWithSrv = uri.startsWith('mongodb+srv://') || uri.startsWith('mongodb://');
+
+  // Extract cluster hostname safely without printing credentials
+  const hostMatch = uri.match(/@([^/?:]+)/);
+  const host = hostMatch ? hostMatch[1] : (startsWithSrv ? 'parsed-cluster' : 'unknown');
+
+  console.log(`[Mongo Diagnostic] MONGODB_URI exists: ${hasUri}`);
+  console.log(`[Mongo Diagnostic] Scheme valid (mongodb+srv): ${startsWithSrv}`);
+  console.log(`[Mongo Diagnostic] Target Cluster Host: ${host}`);
+
   if (!uri || uri.includes('<db_username>') || uri.includes('YOUR_USERNAME')) {
-    throw new Error('MONGODB_URI is not configured or contains placeholder credentials in environment variables.');
+    throw new Error('MONGODB_URI is not configured or contains placeholder credentials.');
   }
 
-  if (!uri.startsWith('mongodb://') && !uri.startsWith('mongodb+srv://')) {
+  if (!startsWithSrv) {
     throw new Error('Invalid MONGODB_URI scheme. Expected a connection string starting with "mongodb://" or "mongodb+srv://".');
   }
 
-  return uri;
+  return { uri, host };
 }
 
 export async function connectToDatabase(): Promise<typeof mongoose> {
-  const uri = getSanitizedMongoUri();
+  const { uri, host } = getSanitizedMongoUri();
 
   // If already connected and ready, return existing connection
   if (cached.conn && mongoose.connection.readyState === 1) {
@@ -56,7 +124,7 @@ export async function connectToDatabase(): Promise<typeof mongoose> {
       socketTimeoutMS: 45000,
     };
 
-    console.log('⏳ Connecting to MongoDB Atlas...');
+    console.log(`⏳ Connecting to MongoDB Atlas cluster: ${host}...`);
 
     cached.promise = mongoose
       .connect(uri, opts)
@@ -67,7 +135,8 @@ export async function connectToDatabase(): Promise<typeof mongoose> {
         return instance;
       })
       .catch((err) => {
-        // Reset cached promise so future requests can retry connecting
+        const classified = classifyMongoError(err);
+        console.error(`❌ MongoDB connection failed [${classified.category}]: ${classified.diagnostic}`);
         cached.promise = null;
         cached.conn = null;
         throw err;
