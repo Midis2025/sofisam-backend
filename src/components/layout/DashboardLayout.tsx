@@ -1,0 +1,37 @@
+'use client';
+
+import React, { useState } from 'react';
+import { Sidebar } from './Sidebar';
+import { Header } from './Header';
+
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+  title?: string;
+  subtitle?: string;
+}
+
+export function DashboardLayout({ children, title, subtitle }: DashboardLayoutProps) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-[#F6F7F9]">
+      {/* Sidebar (Desktop fixed + Mobile drawer) */}
+      <Sidebar isMobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} />
+
+      {/* Main Container */}
+      <div className="flex flex-1 flex-col lg:pl-64">
+        {/* Header */}
+        <Header
+          onOpenMobileMenu={() => setMobileOpen(true)}
+          title={title}
+          subtitle={subtitle}
+        />
+
+        {/* Page Content */}
+        <main className="flex-1 p-4 md:p-8 max-w-7xl w-full mx-auto">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+}
