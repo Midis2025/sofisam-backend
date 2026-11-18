@@ -2,18 +2,22 @@ import mongoose, { Schema, Document, Model } from 'mongoose';
 import { FormType, EnquiryStatus, EnquiryPriority } from '@/types';
 
 export interface IAdminNote {
-  id: string;
-  author: string;
-  content: string;
+  note: string;
   createdAt: Date;
 }
 
+export interface IEmailStatus {
+  adminNotification: 'pending' | 'sent' | 'failed';
+  customerAcknowledgement: 'pending' | 'sent' | 'failed';
+}
+
 export interface IEnquiry extends Document {
-  referenceId: string;
+  enquiryReference: string;
   formType: FormType;
-  name: string;
-  title?: string;
+  nameAndTitle?: string;
+  fullName?: string;
   email: string;
+  organisation?: string;
   company?: string;
   areaOfInterest?: string;
   message: string;
@@ -21,23 +25,38 @@ export interface IEnquiry extends Document {
   priority: EnquiryPriority;
   sourcePage: string;
   adminNotes: IAdminNote[];
+  emailStatus: IEmailStatus;
   submittedAt: Date;
   updatedAt: Date;
 }
 
 const AdminNoteSchema = new Schema<IAdminNote>(
   {
-    id: { type: String, required: true },
-    author: { type: String, required: true },
-    content: { type: String, required: true },
+    note: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
+  },
+  { _id: false }
+);
+
+const EmailStatusSchema = new Schema<IEmailStatus>(
+  {
+    adminNotification: {
+      type: String,
+      enum: ['pending', 'sent', 'failed'],
+      default: 'pending',
+    },
+    customerAcknowledgement: {
+      type: String,
+      enum: ['pending', 'sent', 'failed'],
+      default: 'pending',
+    },
   },
   { _id: false }
 );
 
 const EnquirySchema = new Schema<IEnquiry>(
   {
-    referenceId: {
+    enquiryReference: {
       type: String,
       required: true,
       unique: true,
@@ -50,12 +69,11 @@ const EnquirySchema = new Schema<IEnquiry>(
       required: true,
       index: true,
     },
-    name: {
+    nameAndTitle: {
       type: String,
-      required: true,
       trim: true,
     },
-    title: {
+    fullName: {
       type: String,
       trim: true,
     },
@@ -65,6 +83,10 @@ const EnquirySchema = new Schema<IEnquiry>(
       trim: true,
       lowercase: true,
       index: true,
+    },
+    organisation: {
+      type: String,
+      trim: true,
     },
     company: {
       type: String,
@@ -99,6 +121,13 @@ const EnquirySchema = new Schema<IEnquiry>(
       type: [AdminNoteSchema],
       default: [],
     },
+    emailStatus: {
+      type: EmailStatusSchema,
+      default: () => ({
+        adminNotification: 'pending',
+        customerAcknowledgement: 'pending',
+      }),
+    },
     submittedAt: {
       type: Date,
       default: Date.now,
@@ -107,8 +136,20 @@ const EnquirySchema = new Schema<IEnquiry>(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
+
+// Virtual helper for unified name presentation in dashboard
+EnquirySchema.virtual('displayName').get(function () {
+  return this.fullName || this.nameAndTitle || 'Anonymous Client';
+});
+
+// Virtual helper for unified organisation presentation in dashboard
+EnquirySchema.virtual('displayOrganisation').get(function () {
+  return this.company || this.organisation || '';
+});
 
 export const Enquiry: Model<IEnquiry> =
   mongoose.models.Enquiry || mongoose.model<IEnquiry>('Enquiry', EnquirySchema);

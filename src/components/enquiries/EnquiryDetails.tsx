@@ -28,32 +28,58 @@ export function EnquiryDetails({ initialEnquiry }: EnquiryDetailsProps) {
   const router = useRouter();
   const [enquiry, setEnquiry] = useState<Enquiry>(initialEnquiry);
   const [newNote, setNewNote] = useState('');
+  const [isSubmittingNote, setIsSubmittingNote] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleStatusChange = (newStatus: EnquiryStatus) => {
+  const handleStatusChange = async (newStatus: EnquiryStatus) => {
     setEnquiry((prev) => ({
       ...prev,
       status: newStatus,
       updatedAt: new Date().toISOString(),
     }));
+
+    try {
+      await fetch(`/api/admin/enquiries/${enquiry._id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+    } catch (err) {
+      console.error('Failed to update status:', err);
+    }
   };
 
-  const handlePriorityChange = (newPriority: EnquiryPriority) => {
+  const handlePriorityChange = async (newPriority: EnquiryPriority) => {
     setEnquiry((prev) => ({
       ...prev,
       priority: newPriority,
       updatedAt: new Date().toISOString(),
     }));
+
+    try {
+      await fetch(`/api/admin/enquiries/${enquiry._id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priority: newPriority }),
+      });
+    } catch (err) {
+      console.error('Failed to update priority:', err);
+    }
   };
 
-  const handleAddNote = (e: React.FormEvent) => {
+  const handleAddNote = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newNote.trim()) return;
+    if (!newNote.trim() || isSubmittingNote) return;
+
+    const noteText = newNote.trim();
+    setIsSubmittingNote(true);
 
     const noteItem: AdminNote = {
       id: `note-${Date.now()}`,
       author: 'Administrator',
-      content: newNote.trim(),
+      content: noteText,
+      note: noteText,
       createdAt: new Date().toISOString(),
     };
 
@@ -61,12 +87,39 @@ export function EnquiryDetails({ initialEnquiry }: EnquiryDetailsProps) {
       ...prev,
       adminNotes: [...(prev.adminNotes || []), noteItem],
     }));
-
     setNewNote('');
+
+    try {
+      const res = await fetch(`/api/admin/enquiries/${enquiry._id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ note: noteText }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.data) {
+          setEnquiry(data.data);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to save note:', err);
+    } finally {
+      setIsSubmittingNote(false);
+    }
   };
 
-  const handleDelete = () => {
-    router.push('/enquiries');
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await fetch(`/api/admin/enquiries/${enquiry._id}`, {
+        method: 'DELETE',
+      });
+      router.push('/enquiries');
+    } catch (err) {
+      console.error('Failed to delete enquiry:', err);
+      setIsDeleting(false);
+      setDeleteModalOpen(false);
+    }
   };
 
   return (
@@ -84,7 +137,7 @@ export function EnquiryDetails({ initialEnquiry }: EnquiryDetailsProps) {
           <div>
             <div className="flex items-center gap-2">
               <span className="font-mono text-xs font-bold text-[#14243A] bg-slate-100 px-2 py-0.5 rounded">
-                {enquiry.referenceId}
+                {enquiry.referenceId || enquiry.enquiryReference}
               </span>
               <FormTypeBadge formType={enquiry.formType} />
             </div>
@@ -94,7 +147,7 @@ export function EnquiryDetails({ initialEnquiry }: EnquiryDetailsProps) {
 
         <div className="flex items-center gap-2.5">
           <a
-            href={`mailto:${enquiry.email}?subject=RE: SOFISAM Mandate ${enquiry.referenceId}`}
+            href={`mailto:${enquiry.email}?subject=RE: SOFISAM Mandate ${enquiry.referenceId || enquiry.enquiryReference}`}
             className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium rounded-lg bg-[#14243A] text-white hover:bg-[#1E3554] shadow-xs transition-colors"
           >
             <Mail className="w-3.5 h-3.5" />
@@ -152,16 +205,18 @@ export function EnquiryDetails({ initialEnquiry }: EnquiryDetailsProps) {
                     Company / Organization
                   </span>
                   <span className="text-sm font-medium text-[#182536] mt-0.5 block">
-                    {enquiry.company || 'Not Specified'}
+                    {enquiry.company || enquiry.organisation || 'Not Specified'}
                   </span>
                 </div>
 
                 <div>
                   <span className="text-[11px] font-semibold text-[#7C8795] uppercase tracking-wider block">
-                    Job Title / Position
+                    Classification
                   </span>
                   <span className="text-sm font-medium text-[#182536] mt-0.5 block">
-                    {enquiry.title || 'Not Specified'}
+                    {enquiry.formType === 'private_enquiry'
+                      ? 'Private Office Mandate'
+                      : 'Corporate Contact'}
                   </span>
                 </div>
 
@@ -210,21 +265,25 @@ export function EnquiryDetails({ initialEnquiry }: EnquiryDetailsProps) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
-                {(!enquiry.adminNotes || enquiry.adminNotes.length === 0) ? (
+                {!enquiry.adminNotes || enquiry.adminNotes.length === 0 ? (
                   <p className="text-xs text-[#7C8795] py-2 italic">
                     No internal notes recorded yet for this client file.
                   </p>
                 ) : (
-                  enquiry.adminNotes.map((note) => (
+                  enquiry.adminNotes.map((note, index) => (
                     <div
-                      key={note.id}
+                      key={note.id || index}
                       className="p-3.5 rounded-lg bg-slate-50 border border-[#E5E9EF] text-xs space-y-1"
                     >
                       <div className="flex items-center justify-between text-[11px] text-[#7C8795]">
-                        <span className="font-semibold text-[#14243A]">{note.author}</span>
+                        <span className="font-semibold text-[#14243A]">
+                          {note.author || 'Administrator'}
+                        </span>
                         <span>{formatDate(note.createdAt)}</span>
                       </div>
-                      <p className="text-sm text-[#182536] leading-relaxed">{note.content}</p>
+                      <p className="text-sm text-[#182536] leading-relaxed">
+                        {note.content || note.note}
+                      </p>
                     </div>
                   ))
                 )}
@@ -240,9 +299,14 @@ export function EnquiryDetails({ initialEnquiry }: EnquiryDetailsProps) {
                   className="w-full rounded-lg border border-[#E5E9EF] p-3 text-xs text-[#182536] placeholder-[#7C8795] focus:border-[#B99A62] focus:outline-none focus:ring-1 focus:ring-[#B99A62]"
                 />
                 <div className="flex justify-end">
-                  <Button type="submit" variant="gold" size="sm" disabled={!newNote.trim()}>
+                  <Button
+                    type="submit"
+                    variant="gold"
+                    size="sm"
+                    disabled={!newNote.trim() || isSubmittingNote}
+                  >
                     <Send className="w-3.5 h-3.5" />
-                    <span>Save Note</span>
+                    <span>{isSubmittingNote ? 'Saving...' : 'Save Note'}</span>
                   </Button>
                 </div>
               </form>
@@ -324,12 +388,13 @@ export function EnquiryDetails({ initialEnquiry }: EnquiryDetailsProps) {
         onClose={() => setDeleteModalOpen(false)}
         title="Delete Enquiry Record"
         description="Are you sure you want to permanently delete this submission?"
-        confirmLabel="Confirm Delete"
+        confirmLabel={isDeleting ? 'Deleting...' : 'Confirm Delete'}
         confirmVariant="danger"
         onConfirm={handleDelete}
       >
         <p className="text-xs text-[#182536]">
-          This action will permanently delete record <strong>{enquiry.referenceId}</strong> from{' '}
+          This action will permanently delete record{' '}
+          <strong>{enquiry.referenceId || enquiry.enquiryReference}</strong> from{' '}
           <strong>{enquiry.name}</strong>.
         </p>
       </Modal>

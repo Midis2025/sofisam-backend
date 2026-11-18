@@ -5,6 +5,7 @@ export interface INewsletterSubscriber extends Document {
   email: string;
   status: SubscriberStatus;
   sourcePage: string;
+  consent: boolean;
   subscribedAt: Date;
   unsubscribedAt?: Date;
   createdAt: Date;
@@ -30,7 +31,12 @@ const NewsletterSubscriberSchema = new Schema<INewsletterSubscriber>(
     },
     sourcePage: {
       type: String,
-      default: 'https://sofisam-seven.vercel.app/',
+      default: 'https://sofisam-seven.vercel.app/contact',
+    },
+    consent: {
+      type: Boolean,
+      required: true,
+      default: true,
     },
     subscribedAt: {
       type: Date,

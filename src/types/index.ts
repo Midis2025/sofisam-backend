@@ -5,26 +5,39 @@ export type EnquiryStatus = 'new' | 'contacted' | 'in_progress' | 'converted' | 
 export type EnquiryPriority = 'low' | 'normal' | 'high';
 
 export interface AdminNote {
-  id: string;
-  author: string;
-  content: string;
-  createdAt: string;
+  id?: string;
+  author?: string;
+  note?: string;
+  content?: string;
+  createdAt: string | Date;
+}
+
+export interface EmailDeliveryStatus {
+  adminNotification: 'pending' | 'sent' | 'failed';
+  customerAcknowledgement: 'pending' | 'sent' | 'failed';
 }
 
 export interface Enquiry {
   _id: string;
-  referenceId: string;
+  enquiryReference?: string;
+  referenceId?: string; // Backwards compatible alias
   formType: FormType;
-  name: string;
-  title?: string;
+  nameAndTitle?: string;
+  fullName?: string;
+  name?: string; // Unified display alias
+  displayName?: string;
+  title?: string; // Job title alias
   email: string;
+  organisation?: string;
   company?: string;
+  displayOrganisation?: string;
   areaOfInterest?: string;
   message: string;
   status: EnquiryStatus;
   priority: EnquiryPriority;
   sourcePage: string;
   adminNotes?: AdminNote[];
+  emailStatus?: EmailDeliveryStatus;
   submittedAt: string;
   updatedAt: string;
 }
@@ -36,6 +49,7 @@ export interface NewsletterSubscriber {
   email: string;
   status: SubscriberStatus;
   sourcePage: string;
+  consent?: boolean;
   subscribedAt: string;
   unsubscribedAt?: string;
 }
@@ -52,31 +66,68 @@ export interface AdminUser {
 
 export interface DashboardStats {
   totalEnquiries: number;
-  newEnquiries: number;
-  inProgressEnquiries: number;
+  newSubmissions?: number;
+  newEnquiries?: number;
+  inProgress?: number;
+  inProgressEnquiries?: number;
   newsletterSubscribers: number;
-  trends: {
-    totalEnquiriesChange: number;
-    newEnquiriesChange: number;
-    inProgressChange: number;
-    subscribersChange: number;
+  activeNewsletterSubscribers?: number;
+  previousPeriod?: {
+    totalEnquiries: number;
+    newSubmissions: number;
   };
-  monthlySubmissions: Array<{
+  changes?: {
+    totalEnquiries: number | null;
+    newSubmissions: number | null;
+    inProgress?: number | null;
+    newsletterSubscribers?: number | null;
+  };
+  trends?: {
+    totalEnquiriesChange?: number;
+    newEnquiriesChange?: number;
+    inProgressChange?: number;
+    subscribersChange?: number;
+  };
+  monthlySubmissions?: {
     month: string;
     enquiries: number;
     contacts: number;
     total: number;
-  }>;
-  statusDistribution: Array<{
+  }[];
+  statusDistribution?: {
     name: string;
     value: number;
     color: string;
-  }>;
-  formTypeDistribution: Array<{
+  }[];
+  formTypeDistribution?: {
     name: string;
     value: number;
     color: string;
-  }>;
+  }[];
+}
+
+export interface AnalyticsVolume {
+  month: string;
+  privateEnquiries: number;
+  contactForms: number;
+  total: number;
+}
+
+export interface AnalyticsDistribution {
+  status: EnquiryStatus;
+  name: string;
+  count: number;
+  percentage: number;
+  color?: string;
+}
+
+export interface DashboardAnalytics {
+  monthlyVolume: AnalyticsVolume[];
+  statusDistribution: AnalyticsDistribution[];
+  channelDistribution: {
+    privateEnquiries: number;
+    contactForms: number;
+  };
 }
 
 export interface FilterState {
