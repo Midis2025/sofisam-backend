@@ -192,7 +192,7 @@ export default function NewsletterPage() {
     >
       <div className="space-y-6">
         {/* Real-time sync indicator */}
-        <div className="flex items-center justify-between text-xs text-[#7C8795] -mt-2">
+        <div className="flex items-center justify-between text-xs text-[#66625B] -mt-2">
           <span>{metrics.total} total subscribers in MongoDB</span>
           <button
             onClick={() => {
@@ -200,7 +200,7 @@ export default function NewsletterPage() {
               fetchSubscribers();
             }}
             disabled={isRefreshing}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-[#14243A] hover:bg-slate-100 rounded-md transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-[#171717] hover:bg-[#F6F2EA] rounded-md transition-colors disabled:opacity-50"
             title="Refresh list"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -212,50 +212,50 @@ export default function NewsletterPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           <Card className="p-5 flex items-center justify-between">
             <div>
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-[#7C8795]">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-[#66625B]">
                 Total Subscribers
               </span>
-              <div className="text-2xl font-bold text-[#182536] mt-1">{metrics.total}</div>
-              <p className="text-xs text-[#7C8795] mt-1">All recorded email signups</p>
+              <div className="text-2xl font-bold text-[#171717] mt-1">{metrics.total}</div>
+              <p className="text-xs text-[#66625B] mt-1">All recorded email signups</p>
             </div>
-            <div className="p-3 rounded-xl bg-slate-100 text-[#14243A]">
+            <div className="p-3 rounded-xl bg-[#F6F2EA] text-[#171717]">
               <Users className="w-5 h-5" />
             </div>
           </Card>
 
           <Card className="p-5 flex items-center justify-between">
             <div>
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-[#7C8795]">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-[#66625B]">
                 Active Subscriptions
               </span>
-              <div className="text-2xl font-bold text-emerald-600 mt-1">{metrics.active}</div>
-              <p className="text-xs text-[#7C8795] mt-1">
+              <div className="text-2xl font-bold text-[#2B6B48] mt-1">{metrics.active}</div>
+              <p className="text-xs text-[#66625B] mt-1">
                 {metrics.total > 0
                   ? `${Math.round((metrics.active / metrics.total) * 100)}% active rate`
                   : '100%'}
               </p>
             </div>
-            <div className="p-3 rounded-xl bg-emerald-50 text-emerald-600">
+            <div className="p-3 rounded-xl bg-emerald-50 text-[#2B6B48]">
               <UserCheck className="w-5 h-5" />
             </div>
           </Card>
 
           <Card className="p-5 flex items-center justify-between">
             <div>
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-[#7C8795]">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-[#66625B]">
                 Unsubscribed
               </span>
-              <div className="text-2xl font-bold text-slate-500 mt-1">{metrics.unsubscribed}</div>
-              <p className="text-xs text-[#7C8795] mt-1">Opted out from newsletters</p>
+              <div className="text-2xl font-bold text-[#66625B] mt-1">{metrics.unsubscribed}</div>
+              <p className="text-xs text-[#66625B] mt-1">Opted out from newsletters</p>
             </div>
-            <div className="p-3 rounded-xl bg-rose-50 text-rose-600">
+            <div className="p-3 rounded-xl bg-rose-50 text-[#9A3F2C]">
               <UserX className="w-5 h-5" />
             </div>
           </Card>
         </div>
 
         {/* Filter bar */}
-        <div className="bg-white rounded-xl border border-[#E5E9EF] p-4.5 shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="bg-white rounded-xl border border-[#DED7CA] p-4.5 shadow-[0_1px_3px_rgba(40,30,15,0.03)] flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:max-w-xl">
             <div className="w-full sm:w-80">
               <Input
@@ -288,7 +288,7 @@ export default function NewsletterPage() {
               variant="outline"
               size="sm"
               onClick={handleReset}
-              className="text-xs text-[#7C8795]"
+              className="text-xs text-[#66625B]"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Reset</span>
@@ -307,8 +307,8 @@ export default function NewsletterPage() {
 
         {/* Subscriber Table */}
         {isLoading && subscribers.length === 0 ? (
-          <div className="bg-white rounded-xl border border-[#E5E9EF] p-12 text-center text-xs text-[#7C8795]">
-            <div className="animate-spin inline-block w-5 h-5 border-2 border-slate-300 border-t-[#14243A] rounded-full mb-3"></div>
+          <div className="bg-white rounded-xl border border-[#DED7CA] p-12 text-center text-xs text-[#66625B]">
+            <div className="animate-spin inline-block w-5 h-5 border-2 border-[#DED7CA] border-t-[#171717] rounded-full mb-3"></div>
             <p>Loading subscriber records...</p>
           </div>
         ) : (

@@ -159,3 +159,117 @@ export interface FilterState {
   page: number;
   limit: number;
 }
+
+export type EmailType =
+  | 'admin_notification'
+  | 'customer_acknowledgement'
+  | 'newsletter_welcome'
+  | 'newsletter_confirmation'
+  | 'other';
+
+export type EmailDeliveryStatusType =
+  | 'queued'
+  | 'sent'
+  | 'delivered'
+  | 'delivery_delayed'
+  | 'bounced'
+  | 'complained'
+  | 'failed';
+
+export interface EmailTimelineEvent {
+  eventType: string;
+  name?: string;
+  status?: string;
+  timestamp: string | Date;
+  details?: string;
+  description?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface EmailLogItem {
+  _id: string;
+  resendEmailId?: string;
+  recipient: string;
+  sender: string;
+  subject: string;
+  emailType: EmailType;
+  provider: string;
+  status: EmailDeliveryStatusType;
+  relatedEnquiryId?: string;
+  relatedEnquiryReference?: string;
+  errorMessage?: string;
+  errorCode?: string;
+  bounceReason?: string;
+  bounceType?: string;
+  bounceSubtype?: string;
+  createdAt: string;
+  updatedAt?: string;
+  sentAt?: string;
+  deliveredAt?: string;
+  failedAt?: string;
+  bouncedAt?: string;
+  openedAt?: string;
+  lastOpenedAt?: string;
+  clickedAt?: string;
+  openedCount?: number;
+  clickedCount?: number;
+  lastEventAt?: string;
+  events?: EmailTimelineEvent[];
+  eventHistory?: EmailTimelineEvent[];
+}
+
+export interface EmailStats {
+  totalEmails: number;
+  totalSent: number;
+  totalAccepted?: number;
+  sent: number;
+  delivered: number;
+  pending: number;
+  inTransit?: number;
+  failed: number;
+  bounced: number;
+  complained: number;
+  deliveryDelayed: number;
+  deliveryRate: number;
+  failureRate: number;
+  opened?: number;
+  uniqueOpened?: number;
+  totalOpens?: number;
+  openRate?: number;
+  clicked?: number;
+  uniqueClicked?: number;
+  totalClicks?: number;
+  clickRate?: number;
+}
+
+export interface EmailHealth {
+  resendConfigured: boolean;
+  webhookConfigured: boolean;
+  webhookStatus: 'active' | 'not_configured' | 'error';
+  senderDomain: string;
+  totalWebhookEvents: number;
+  totalWebhookEventsReceived?: number;
+  totalWebhookEventsProcessed?: number;
+  totalWebhookProcessingFailures?: number;
+  lastWebhookReceivedAt?: string;
+  lastProcessedAt?: string;
+  lastProcessingError?: string;
+  webhookUrl?: string;
+  subscribedEvents?: string[];
+  latestSuccessfulDispatch?: string;
+  latestSuccessfulDelivery?: string;
+  latestEmailFailure?: {
+    timestamp: string;
+    message: string;
+  };
+  recentFailureCount24h: number;
+  overallDeliveryRate?: number;
+  overallFailureRate?: number;
+  lastDeliveredAt?: string;
+  lastConfirmedDelivery?: string;
+  lastEmailAttempt?: string;
+  lastSuccessfulApiResponse?: string;
+  lastFailedAt?: string;
+  lastFailedReason?: string;
+}
+

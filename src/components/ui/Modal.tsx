@@ -47,20 +47,20 @@ export function Modal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-[#0C1726]/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
+        className="fixed inset-0 bg-[#0B0B0D]/70 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
         onClick={onClose}
       />
 
       {/* Modal Dialog */}
-      <div className="relative z-10 w-full max-w-lg overflow-hidden rounded-xl bg-white shadow-2xl border border-[#E5E9EF] animate-in zoom-in-95 duration-200">
-        <div className="flex items-center justify-between border-b border-[#E5E9EF] px-6 py-4">
+      <div className="relative z-10 w-full max-w-lg overflow-hidden rounded-xl bg-white shadow-2xl border border-[#DED7CA] animate-in zoom-in-95 duration-200">
+        <div className="flex items-center justify-between border-b border-[#DED7CA] px-6 py-4">
           <div>
-            <h3 className="text-base font-semibold text-[#182536]">{title}</h3>
-            {description && <p className="text-xs text-[#7C8795] mt-0.5">{description}</p>}
+            <h3 className="text-base font-semibold text-[#171717]">{title}</h3>
+            {description && <p className="text-xs text-[#66625B] mt-0.5">{description}</p>}
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-[#7C8795] hover:bg-slate-100 hover:text-[#182536] transition-colors"
+            className="rounded-lg p-1.5 text-[#66625B] hover:bg-[#F6F2EA] hover:text-[#171717] transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -69,7 +69,7 @@ export function Modal({
         <div className="p-6">{children}</div>
 
         {(onConfirm || confirmLabel) && (
-          <div className="flex items-center justify-end gap-3 border-t border-[#E5E9EF] bg-slate-50/50 px-6 py-3.5">
+          <div className="flex items-center justify-end gap-3 border-t border-[#DED7CA] bg-[#FBF9F5] px-6 py-3.5">
             <Button variant="outline" onClick={onClose} disabled={isLoading}>
               Cancel
             </Button>

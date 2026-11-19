@@ -45,10 +45,10 @@ export function SubscriberTable({
   };
 
   return (
-    <div className="bg-white rounded-xl border border-[#E5E9EF] shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
+    <div className="bg-white rounded-xl border border-[#DED7CA] shadow-[0_1px_3px_rgba(40,30,15,0.03)] overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
-          <thead className="bg-[#F8F9FA] border-b border-[#E5E9EF] text-[11px] font-semibold uppercase tracking-wider text-[#7C8795]">
+          <thead className="bg-[#FBF9F5] border-b border-[#DED7CA] text-[11px] font-semibold uppercase tracking-wider text-[#66625B]">
             <tr>
               <th className="py-3.5 px-6">Subscriber Email</th>
               <th className="py-3.5 px-6">Status</th>
@@ -58,13 +58,13 @@ export function SubscriberTable({
               <th className="py-3.5 px-6 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#E5E9EF] bg-white">
+          <tbody className="divide-y divide-[#EEE8DC] bg-white">
             {subscribers.length === 0 ? (
               <tr>
                 <td colSpan={6} className="py-12 text-center">
                   <div className="max-w-xs mx-auto text-center">
-                    <p className="text-sm font-semibold text-[#182536]">No subscribers found</p>
-                    <p className="text-xs text-[#7C8795] mt-1">
+                    <p className="text-sm font-semibold text-[#171717]">No subscribers found</p>
+                    <p className="text-xs text-[#66625B] mt-1">
                       No subscriber matching the selected filter criteria.
                     </p>
                   </div>
@@ -72,26 +72,26 @@ export function SubscriberTable({
               </tr>
             ) : (
               subscribers.map((sub) => (
-                <tr key={sub._id} className="hover:bg-slate-50/70 transition-colors">
+                <tr key={sub._id} className="hover:bg-[#F6F2EA]/60 transition-colors">
                   <td className="py-3.5 px-6">
-                    <div className="font-semibold text-[#182536] flex items-center gap-2">
-                      <Mail className="w-3.5 h-3.5 text-[#B99A62]" />
+                    <div className="font-semibold text-[#171717] flex items-center gap-2">
+                      <Mail className="w-3.5 h-3.5 text-[#C7A46A]" />
                       <span>{sub.email}</span>
                     </div>
                   </td>
                   <td className="py-3.5 px-6 whitespace-nowrap">
                     <SubscriberBadge status={sub.status} />
                   </td>
-                  <td className="py-3.5 px-6 text-xs text-[#7C8795] truncate max-w-[220px]">
+                  <td className="py-3.5 px-6 text-xs text-[#66625B] truncate max-w-[220px]">
                     <span className="flex items-center gap-1.5 truncate">
-                      <Globe className="w-3 h-3 text-slate-400 shrink-0" />
+                      <Globe className="w-3 h-3 text-[#98948D] shrink-0" />
                       <span className="truncate">{sub.sourcePage}</span>
                     </span>
                   </td>
-                  <td className="py-3.5 px-6 text-xs text-[#7C8795] whitespace-nowrap">
+                  <td className="py-3.5 px-6 text-xs text-[#66625B] whitespace-nowrap">
                     {formatDate(sub.subscribedAt)}
                   </td>
-                  <td className="py-3.5 px-6 text-xs text-[#7C8795] whitespace-nowrap">
+                  <td className="py-3.5 px-6 text-xs text-[#66625B] whitespace-nowrap">
                     {sub.unsubscribedAt ? formatDate(sub.unsubscribedAt) : '—'}
                   </td>
                   <td className="py-3.5 px-6 text-right whitespace-nowrap">
@@ -104,8 +104,8 @@ export function SubscriberTable({
                       }}
                       className={
                         sub.status === 'active'
-                          ? 'text-xs text-rose-600 hover:bg-rose-50 hover:border-rose-200'
-                          : 'text-xs text-emerald-700 bg-emerald-50 hover:bg-emerald-100'
+                          ? 'text-xs text-[#9A3F2C] hover:bg-rose-50 hover:border-rose-200'
+                          : 'text-xs text-[#2B6B48] bg-emerald-50 hover:bg-emerald-100'
                       }
                     >
                       {sub.status === 'active' ? (
@@ -129,17 +129,17 @@ export function SubscriberTable({
       </div>
 
       {/* Pagination Footer */}
-      <div className="flex flex-col sm:flex-row items-center justify-between border-t border-[#E5E9EF] bg-[#F8F9FA] px-6 py-3 text-xs text-[#7C8795] gap-3">
+      <div className="flex flex-col sm:flex-row items-center justify-between border-t border-[#DED7CA] bg-[#FBF9F5] px-6 py-3 text-xs text-[#66625B] gap-3">
         <div>
           Showing{' '}
-          <span className="font-semibold text-[#182536]">
+          <span className="font-semibold text-[#171717]">
             {totalItems === 0 ? 0 : (currentPage - 1) * 10 + 1}
           </span>{' '}
           to{' '}
-          <span className="font-semibold text-[#182536]">
+          <span className="font-semibold text-[#171717]">
             {Math.min(currentPage * 10, totalItems)}
           </span>{' '}
-          of <span className="font-semibold text-[#182536]">{totalItems}</span> subscribers
+          of <span className="font-semibold text-[#171717]">{totalItems}</span> subscribers
         </div>
 
         <div className="flex items-center gap-1.5">
@@ -154,7 +154,7 @@ export function SubscriberTable({
             Previous
           </Button>
 
-          <span className="px-3 font-medium text-[#182536]">
+          <span className="px-3 font-medium text-[#171717]">
             Page {currentPage} of {totalPages || 1}
           </span>
 
@@ -189,8 +189,8 @@ export function SubscriberTable({
         confirmVariant={selectedSub?.status === 'active' ? 'danger' : 'primary'}
         onConfirm={handleConfirmToggle}
       >
-        <div className="p-3 rounded-lg bg-slate-50 border border-[#E5E9EF] text-xs">
-          Subscriber email: <strong className="font-semibold text-[#182536]">{selectedSub?.email}</strong>
+        <div className="p-3 rounded-lg bg-[#FBF9F5] border border-[#DED7CA] text-xs">
+          Subscriber email: <strong className="font-semibold text-[#171717]">{selectedSub?.email}</strong>
         </div>
       </Modal>
     </div>

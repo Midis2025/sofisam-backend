@@ -75,7 +75,7 @@ export default function EnquiryDetailPage({ params }: PageProps) {
     <Suspense
       fallback={
         <DashboardLayout title="Mandate File" subtitle="Loading mandate records...">
-          <div className="p-8 text-center text-xs text-[#7C8795]">Loading client file...</div>
+          <div className="p-8 text-center text-xs text-[#66625B]">Loading client file...</div>
         </DashboardLayout>
       }
     >

@@ -61,14 +61,14 @@ export function EnquirySummary({
         {/* Pie Chart or Empty State */}
         <div className="h-[180px] w-full flex items-center justify-center">
           {!mounted ? (
-            <div className="text-xs text-[#7C8795]">Loading distribution...</div>
+            <div className="text-xs text-[#66625B]">Loading distribution...</div>
           ) : totalStatus === 0 ? (
             <div className="flex flex-col items-center justify-center text-center">
-              <div className="w-20 h-20 rounded-full border border-dashed border-[#E5E9EF] bg-slate-50 flex flex-col items-center justify-center">
-                <span className="text-sm font-bold text-[#7C8795]">0</span>
-                <span className="text-[10px] text-slate-400">Total</span>
+              <div className="w-20 h-20 rounded-full border border-dashed border-[#DED7CA] bg-[#FBF9F5] flex flex-col items-center justify-center">
+                <span className="text-sm font-bold text-[#66625B]">0</span>
+                <span className="text-[10px] text-[#98948D]">Total</span>
               </div>
-              <span className="text-[11px] text-[#7C8795] mt-2">
+              <span className="text-[11px] text-[#66625B] mt-2">
                 No submissions in this period
               </span>
             </div>
@@ -92,9 +92,10 @@ export function EnquirySummary({
                   contentStyle={{
                     backgroundColor: '#FFFFFF',
                     borderRadius: '8px',
-                    border: '1px solid #E5E9EF',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
+                    border: '1px solid #DED7CA',
+                    boxShadow: '0 4px 16px rgba(40,30,15,0.06)',
                     fontSize: '12px',
+                    color: '#171717',
                   }}
                 />
               </PieChart>
@@ -113,11 +114,11 @@ export function EnquirySummary({
                     className="w-2.5 h-2.5 rounded-full shrink-0"
                     style={{ backgroundColor: item.color }}
                   />
-                  <span className="text-[#182536] font-medium">{item.name}</span>
+                  <span className="text-[#171717] font-medium">{item.name}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[#7C8795]">{item.value}</span>
-                  <span className="text-slate-400 font-mono text-[11px] w-8 text-right">
+                  <span className="text-[#66625B]">{item.value}</span>
+                  <span className="text-[#98948D] font-mono text-[11px] w-8 text-right">
                     {percentage}%
                   </span>
                 </div>
@@ -127,17 +128,17 @@ export function EnquirySummary({
         </div>
 
         {/* Channel Source Comparison Bar */}
-        <div className="pt-4 border-t border-[#E5E9EF]">
+        <div className="pt-4 border-t border-[#DED7CA]">
           <div className="flex items-center justify-between text-xs mb-2">
-            <span className="font-semibold text-[#182536]">Channel Source</span>
-            <span className="text-[11px] text-[#7C8795]">
+            <span className="font-semibold text-[#171717]">Channel Source</span>
+            <span className="text-[11px] text-[#66625B]">
               {totalForms} {totalForms === 1 ? 'Submission' : 'Submissions'}
             </span>
           </div>
 
-          <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden flex">
+          <div className="w-full bg-[#EEE8DC] h-2.5 rounded-full overflow-hidden flex">
             {totalForms === 0 ? (
-              <div className="w-full h-full bg-slate-200" title="No submissions in period" />
+              <div className="w-full h-full bg-[#DED7CA]" title="No submissions in period" />
             ) : (
               formTypeData.map((channel, idx) => {
                 const pct = (channel.value / totalForms) * 100;
@@ -153,12 +154,12 @@ export function EnquirySummary({
             )}
           </div>
 
-          <div className="flex justify-between items-center text-[11px] text-[#7C8795] mt-1.5">
+          <div className="flex justify-between items-center text-[11px] text-[#66625B] mt-1.5">
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-xs bg-[#14243A]" /> Private Office ({privateOfficePct}%)
+              <span className="w-2 h-2 rounded-xs bg-[#171717]" /> Private Office ({privateOfficePct}%)
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-xs bg-[#B99A62]" /> Contact ({contactPct}%)
+              <span className="w-2 h-2 rounded-xs bg-[#C7A46A]" /> Contact ({contactPct}%)
             </span>
           </div>
         </div>

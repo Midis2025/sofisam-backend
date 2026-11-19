@@ -237,6 +237,33 @@ Every valid enquiry triggers two simultaneous, non-blocking transactional emails
 
 ---
 
+## 3.1 Resend Webhooks & Delivery Tracking
+
+The backend implements cryptographic webhook verification via Svix to monitor real-time email delivery events from Resend.
+
+- **Webhook Endpoint:** `POST /api/webhooks/resend`
+- **Verification Secret:** `RESEND_WEBHOOK_SECRET` (obtained from Resend Dashboard)
+- **Supported Events:**
+  - `email.sent`: Email accepted by provider and in transit.
+  - `email.delivered`: Confirmed inbox placement by receiving mail server.
+  - `email.delivery_delayed`: Temporary delay (e.g., greylisting, throttled recipient MX).
+  - `email.bounced`: Hard/soft bounce (captures bounce type, subtype, and error description).
+  - `email.complained`: Recipient marked email as spam.
+- **Security & Idempotency:**
+  - Svix verifies `svix-id`, `svix-timestamp`, and `svix-signature` against the raw request body.
+  - Duplicate events are ignored via unique `eventId` indexing on `EmailWebhookEvent`.
+  - Non-regressive state transitions prevent out-of-order webhook delivery from overwriting terminal states.
+  - Automatically synchronizes `emailStatus` in the associated `Enquiry` record.
+
+### Resend Webhook Setup Instructions
+1. Navigate to [Resend Dashboard -> Webhooks](https://resend.com/webhooks).
+2. Click **Add Webhook**.
+3. Endpoint URL: `https://sofisam-backend.vercel.app/api/webhooks/resend`
+4. Select Events: Check `email.sent`, `email.delivered`, `email.delivery_delayed`, `email.bounced`, `email.complained`.
+5. Copy the **Signing Secret** (`whsec_...`) and configure `RESEND_WEBHOOK_SECRET` in your environment.
+
+---
+
 ## 4. Protected Administrator APIs
 
 Admin endpoints require an active HTTP-only session cookie (`sofisam_admin_session`).
@@ -322,6 +349,32 @@ Finds by MongoDB `_id` or `enquiryReference` (`ENQ-YYYY-XXXX` or `CNT-YYYY-XXXX`
 
 #### Delete Subscriber
 `DELETE /api/admin/newsletter/:id`
+
+---
+
+### Email Monitoring & Telemetry APIs
+
+#### 1. Aggregate Statistics
+`GET /api/admin/emails/stats?period=24h|7d|30d|90d|all`
+- Returns: `totalSent`, `delivered`, `pending`, `failed`, `deliveryRate`, `failureRate`, and breakdown by event status.
+
+#### 2. Email Activity Ledger
+`GET /api/admin/emails`
+- `search`: string (matches recipient email or subject line)
+- `status`: `all` | `queued` | `sent` | `delivered` | `delivery_delayed` | `bounced` | `failed` | `complained`
+- `type`: `all` | `admin_alert` | `customer_acknowledgement` | `newsletter_confirmation`
+- `dateRange`: `all` | `24h` | `7d` | `30d` | `90d`
+- `sortBy`: `newest` | `oldest`
+- `page`: number (default 1)
+- `limit`: number (default 10)
+
+#### 3. Single Email Transmission Audit
+`GET /api/admin/emails/:id`
+- Retrieves complete email log record by MongoDB `_id` or `resendEmailId`, including chronological event timeline and bounce diagnostics.
+
+#### 4. Delivery Infrastructure Health
+`GET /api/admin/emails/health`
+- Returns Resend API key status, Svix webhook secret status, overall delivery rate %, overall failure rate %, and timestamps of last delivered / failed dispatches.
 
 ---
 

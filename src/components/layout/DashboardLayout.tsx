@@ -20,7 +20,7 @@ export function DashboardLayout({
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#F6F7F9]">
+    <div className="min-h-screen bg-[#F6F2EA]">
       {/* Sidebar (Desktop fixed + Mobile drawer) */}
       <Sidebar isMobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} />
 

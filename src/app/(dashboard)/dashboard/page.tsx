@@ -184,15 +184,15 @@ export default function DashboardPage() {
     >
       <div className="space-y-8">
         {/* Real-time sync indicator */}
-        <div className="flex items-center justify-between text-xs text-[#7C8795] -mt-2">
+        <div className="flex items-center justify-between text-xs text-[#66625B] -mt-2">
           <div className="flex items-center gap-2">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#2B6B48]"></span>
             </span>
             <span>Live MongoDB Sync (30s polling)</span>
             {lastRefreshedAt && (
-              <span className="text-[11px] text-slate-400">
+              <span className="text-[11px] text-[#98948D]">
                 • Updated {lastRefreshedAt.toLocaleTimeString()}
               </span>
             )}
@@ -200,7 +200,7 @@ export default function DashboardPage() {
           <button
             onClick={() => fetchDashboardData(false)}
             disabled={isRefreshing}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-[#14243A] hover:bg-slate-100 rounded-md transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-[#171717] hover:bg-[#F6F2EA] rounded-md transition-colors disabled:opacity-50"
             title="Refresh now"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -214,10 +214,10 @@ export default function DashboardPage() {
             Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
-                className="h-32 bg-white rounded-xl border border-[#E5E9EF] animate-pulse p-6"
+                className="h-32 bg-white rounded-xl border border-[#DED7CA] animate-pulse p-6"
               >
-                <div className="h-4 bg-slate-100 rounded w-1/3 mb-4"></div>
-                <div className="h-8 bg-slate-200 rounded w-1/2"></div>
+                <div className="h-4 bg-[#F6F2EA] rounded w-1/3 mb-4"></div>
+                <div className="h-8 bg-[#EEE8DC] rounded w-1/2"></div>
               </div>
             ))
           ) : (
@@ -236,7 +236,7 @@ export default function DashboardPage() {
                 change={stats?.changes.newSubmissions ?? undefined}
                 description="Pending initial contact"
                 icon={Mail}
-                variant="info"
+                variant="gold"
               />
               <StatCard
                 title="In Progress"
@@ -244,7 +244,7 @@ export default function DashboardPage() {
                 change={stats?.changes.inProgress ?? undefined}
                 description="Active review & advisory"
                 icon={Clock}
-                variant="gold"
+                variant="info"
               />
               <StatCard
                 title="Newsletter Subscribers"
@@ -262,9 +262,9 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             {isLoading && !analytics ? (
-              <div className="h-[380px] bg-white rounded-xl border border-[#E5E9EF] animate-pulse p-6">
-                <div className="h-4 bg-slate-100 rounded w-1/4 mb-6"></div>
-                <div className="h-[280px] bg-slate-50 rounded"></div>
+              <div className="h-[380px] bg-white rounded-xl border border-[#DED7CA] animate-pulse p-6">
+                <div className="h-4 bg-[#F6F2EA] rounded w-1/4 mb-6"></div>
+                <div className="h-[280px] bg-[#FBF9F5] rounded"></div>
               </div>
             ) : (
               <EnquiryChart
@@ -277,9 +277,9 @@ export default function DashboardPage() {
           </div>
           <div>
             {isLoading && !analytics ? (
-              <div className="h-[380px] bg-white rounded-xl border border-[#E5E9EF] animate-pulse p-6">
-                <div className="h-4 bg-slate-100 rounded w-1/3 mb-6"></div>
-                <div className="h-[280px] bg-slate-50 rounded"></div>
+              <div className="h-[380px] bg-white rounded-xl border border-[#DED7CA] animate-pulse p-6">
+                <div className="h-4 bg-[#F6F2EA] rounded w-1/3 mb-6"></div>
+                <div className="h-[280px] bg-[#FBF9F5] rounded"></div>
               </div>
             ) : (
               <EnquirySummary

@@ -19,6 +19,8 @@ export interface IEnquiry extends Document {
   email: string;
   organisation?: string;
   company?: string;
+  phone?: string;
+  subject?: string;
   areaOfInterest?: string;
   message: string;
   status: EnquiryStatus;
@@ -89,6 +91,14 @@ const EnquirySchema = new Schema<IEnquiry>(
       trim: true,
     },
     company: {
+      type: String,
+      trim: true,
+    },
+    phone: {
+      type: String,
+      trim: true,
+    },
+    subject: {
       type: String,
       trim: true,
     },

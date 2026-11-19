@@ -9,11 +9,11 @@ const STATUS_CONFIG: Record<
   string,
   { name: string; color: string }
 > = {
-  new: { name: 'New', color: '#2563EB' },
-  contacted: { name: 'Contacted', color: '#B99A62' },
-  in_progress: { name: 'In Progress', color: '#D97706' },
-  converted: { name: 'Converted', color: '#059669' },
-  closed: { name: 'Closed', color: '#6B7280' },
+  new: { name: 'New', color: '#C7A46A' },
+  contacted: { name: 'Contacted', color: '#7A5D33' },
+  in_progress: { name: 'In Progress', color: '#C07D2B' },
+  converted: { name: 'Converted', color: '#2B6B48' },
+  closed: { name: 'Closed', color: '#66625B' },
 };
 
 export async function GET(req: NextRequest) {
@@ -252,8 +252,8 @@ export async function GET(req: NextRequest) {
     }
 
     const formTypeDistribution = [
-      { name: 'Private Office', value: privateCount, count: privateCount, color: '#14243A' },
-      { name: 'Contact', value: contactCount, count: contactCount, color: '#B99A62' },
+      { name: 'Private Office', value: privateCount, count: privateCount, color: '#171717' },
+      { name: 'Contact', value: contactCount, count: contactCount, color: '#C7A46A' },
     ];
 
     return NextResponse.json({

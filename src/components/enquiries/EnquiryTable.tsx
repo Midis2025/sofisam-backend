@@ -74,7 +74,7 @@ export function EnquiryTable({
   const endIndex = Math.min(currentPage * pageSize, totalItems);
 
   return (
-    <div className="bg-white rounded-xl border border-[#E5E9EF] shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-col justify-between min-h-[560px] lg:min-h-[640px] overflow-hidden w-full">
+    <div className="bg-white rounded-xl border border-[#DED7CA] shadow-[0_1px_3px_rgba(40,30,15,0.03)] flex flex-col justify-between min-h-[560px] lg:min-h-[640px] overflow-hidden w-full">
       {/* Table Area */}
       <div className="w-full overflow-x-auto lg:overflow-x-visible">
         <table className="w-full text-left text-sm border-collapse">
@@ -91,7 +91,7 @@ export function EnquiryTable({
             <col className="w-[7%] min-w-[70px]" />
           </colgroup>
 
-          <thead className="bg-[#F8F9FA] border-b border-[#E5E9EF] text-[11px] font-semibold uppercase tracking-wider text-[#7C8795]">
+          <thead className="bg-[#FBF9F5] border-b border-[#DED7CA] text-[11px] font-semibold uppercase tracking-wider text-[#66625B]">
             <tr>
               <th className="py-4 px-3 xl:px-4">Ref ID</th>
               <th className="py-4 px-3 xl:px-4">Prospect / Client</th>
@@ -105,16 +105,16 @@ export function EnquiryTable({
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-[#E5E9EF] bg-white">
+          <tbody className="divide-y divide-[#EEE8DC] bg-white">
             {enquiries.length === 0 ? (
               <tr>
                 <td colSpan={9} className="py-24 text-center">
                   <div className="max-w-xs mx-auto text-center">
-                    <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3 text-slate-400">
-                      <Mail className="w-6 h-6 text-slate-400" />
+                    <div className="w-12 h-12 rounded-full bg-[#F6F2EA] flex items-center justify-center mx-auto mb-3 text-[#66625B]">
+                      <Mail className="w-6 h-6 text-[#66625B]" />
                     </div>
-                    <p className="text-sm font-semibold text-[#182536]">No enquiries found</p>
-                    <p className="text-xs text-[#7C8795] mt-1">
+                    <p className="text-sm font-semibold text-[#171717]">No enquiries found</p>
+                    <p className="text-xs text-[#66625B] mt-1">
                       No matching mandate submissions found for the selected criteria.
                     </p>
                   </div>
@@ -129,47 +129,47 @@ export function EnquiryTable({
                 return (
                   <tr
                     key={enq._id}
-                    className="hover:bg-slate-50/70 transition-colors group"
+                    className="hover:bg-[#F6F2EA]/60 transition-colors group"
                   >
                     {/* Reference ID */}
-                    <td className="py-4 px-3 xl:px-4 whitespace-nowrap font-mono text-xs font-semibold text-[#14243A]">
+                    <td className="py-4 px-3 xl:px-4 whitespace-nowrap font-mono text-xs font-semibold text-[#171717]">
                       {ref}
                     </td>
 
                     {/* Client / Prospect */}
                     <td className="py-4 px-3 xl:px-4">
                       <div
-                        className="font-semibold text-xs text-[#182536] group-hover:text-[#14243A] truncate leading-snug"
+                        className="font-semibold text-xs text-[#171717] group-hover:text-[#7A5D33] truncate leading-snug transition-colors"
                         title={enq.name}
                       >
                         {enq.name}
                       </div>
                       <div
-                        className="text-[11px] text-[#7C8795] flex items-center gap-1 mt-0.5 truncate"
+                        className="text-[11px] text-[#66625B] flex items-center gap-1 mt-0.5 truncate"
                         title={enq.email}
                       >
-                        <Mail className="w-3 h-3 text-slate-400 shrink-0" />
+                        <Mail className="w-3 h-3 text-[#98948D] shrink-0" />
                         <span className="truncate">{enq.email}</span>
                       </div>
                     </td>
 
                     {/* Company */}
                     <td className="py-4 px-3 xl:px-4">
-                      <div className="text-xs font-medium text-[#182536] flex items-center gap-1.5 leading-snug">
+                      <div className="text-xs font-medium text-[#171717] flex items-center gap-1.5 leading-snug">
                         {comp ? (
                           <>
-                            <Building2 className="w-3.5 h-3.5 text-[#B99A62] shrink-0" />
+                            <Building2 className="w-3.5 h-3.5 text-[#C7A46A] shrink-0" />
                             <span className="truncate" title={comp}>
                               {comp}
                             </span>
                           </>
                         ) : (
-                          <span className="text-slate-400">—</span>
+                          <span className="text-[#98948D]">—</span>
                         )}
                       </div>
                       {enq.title && (
                         <div
-                          className="text-[11px] text-[#7C8795] truncate mt-0.5"
+                          className="text-[11px] text-[#66625B] truncate mt-0.5"
                           title={enq.title}
                         >
                           {enq.title}
@@ -183,26 +183,26 @@ export function EnquiryTable({
                     </td>
 
                     {/* Area of Interest */}
-                    <td className="py-4 px-3 xl:px-4 text-xs text-[#182536]">
+                    <td className="py-4 px-3 xl:px-4 text-xs text-[#171717]">
                       {enq.areaOfInterest ? (
                         <div
-                          className="line-clamp-2 leading-relaxed font-normal text-[#182536]"
+                          className="line-clamp-2 leading-relaxed font-normal text-[#171717]"
                           title={enq.areaOfInterest}
                         >
                           {enq.areaOfInterest}
                         </div>
                       ) : (
-                        <span className="text-slate-400">—</span>
+                        <span className="text-[#98948D]">—</span>
                       )}
                     </td>
 
                     {/* Submitted */}
                     <td className="py-4 px-3 xl:px-4 whitespace-nowrap">
-                      <div className="text-xs font-medium text-[#182536] leading-tight">
+                      <div className="text-xs font-medium text-[#171717] leading-tight">
                         {datePart}
                       </div>
                       {timePart && (
-                        <div className="text-[11px] text-[#7C8795] font-mono mt-0.5">
+                        <div className="text-[11px] text-[#66625B] font-mono mt-0.5">
                           {timePart}
                         </div>
                       )}
@@ -223,7 +223,7 @@ export function EnquiryTable({
                       <div className="flex items-center justify-end gap-1">
                         <Link
                           href={`/enquiries/${enq._id}`}
-                          className="p-1.5 rounded-lg text-[#14243A] hover:bg-slate-100 hover:text-[#B99A62] transition-colors"
+                          className="p-1.5 rounded-lg text-[#171717] hover:bg-[#F6F2EA] hover:text-[#7A5D33] transition-colors"
                           title="View Full Details"
                         >
                           <Eye className="w-4 h-4" />
@@ -234,7 +234,7 @@ export function EnquiryTable({
                             setSelectedEnquiry(enq);
                             setDeleteModalOpen(true);
                           }}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                          className="p-1.5 rounded-lg text-[#98948D] hover:text-[#9A3F2C] hover:bg-rose-50 transition-colors"
                           title="Delete Enquiry"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -250,21 +250,21 @@ export function EnquiryTable({
       </div>
 
       {/* Pagination Footer */}
-      <div className="flex flex-col sm:flex-row items-center justify-between border-t border-[#E5E9EF] bg-[#F8F9FA] px-4 sm:px-6 py-3.5 text-xs text-[#7C8795] gap-3 mt-auto">
+      <div className="flex flex-col sm:flex-row items-center justify-between border-t border-[#DED7CA] bg-[#FBF9F5] px-4 sm:px-6 py-3.5 text-xs text-[#66625B] gap-3 mt-auto">
         <div className="flex items-center gap-3">
           <div>
-            Showing <span className="font-semibold text-[#182536]">{startIndex}</span> to{' '}
-            <span className="font-semibold text-[#182536]">{endIndex}</span> of{' '}
-            <span className="font-semibold text-[#182536]">{totalItems}</span> submissions
+            Showing <span className="font-semibold text-[#171717]">{startIndex}</span> to{' '}
+            <span className="font-semibold text-[#171717]">{endIndex}</span> of{' '}
+            <span className="font-semibold text-[#171717]">{totalItems}</span> submissions
           </div>
 
           {onPageSizeChange && (
-            <div className="hidden md:flex items-center gap-1.5 pl-3 border-l border-[#E5E9EF]">
+            <div className="hidden md:flex items-center gap-1.5 pl-3 border-l border-[#DED7CA]">
               <span>Per page:</span>
               <select
                 value={pageSize}
                 onChange={(e) => onPageSizeChange(Number(e.target.value))}
-                className="bg-white border border-[#E5E9EF] rounded px-1.5 py-0.5 text-xs text-[#182536] focus:border-[#B99A62] focus:outline-none"
+                className="bg-white border border-[#DED7CA] rounded px-1.5 py-0.5 text-xs text-[#171717] focus:border-[#C7A46A] focus:outline-none"
               >
                 <option value={10}>10</option>
                 <option value={15}>15</option>
@@ -287,7 +287,7 @@ export function EnquiryTable({
             Previous
           </Button>
 
-          <span className="px-2.5 font-medium text-[#182536]">
+          <span className="px-2.5 font-medium text-[#171717]">
             Page {currentPage} of {totalPages || 1}
           </span>
 

@@ -206,14 +206,14 @@ export const MOCK_STATS: DashboardStats = {
     { month: 'Nov', enquiries: 34, contacts: 21, total: 55 },
   ],
   statusDistribution: [
-    { name: 'New', value: 8, color: '#2563EB' },
-    { name: 'Contacted', value: 14, color: '#B99A62' },
-    { name: 'In Progress', value: 19, color: '#D97706' },
-    { name: 'Converted', value: 42, color: '#059669' },
-    { name: 'Closed', value: 59, color: '#6B7280' },
+    { name: 'New', value: 8, color: '#C7A46A' },
+    { name: 'Contacted', value: 14, color: '#7A5D33' },
+    { name: 'In Progress', value: 19, color: '#C07D2B' },
+    { name: 'Converted', value: 42, color: '#2B6B48' },
+    { name: 'Closed', value: 59, color: '#66625B' },
   ],
   formTypeDistribution: [
-    { name: 'Private Enquiry', value: 89, color: '#14243A' },
-    { name: 'Contact Form', value: 53, color: '#B99A62' },
+    { name: 'Private Enquiry', value: 89, color: '#171717' },
+    { name: 'Contact Form', value: 53, color: '#C7A46A' },
   ],
 };

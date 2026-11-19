@@ -1,32 +1,103 @@
 @import "tailwindcss";
 
 @theme {
-  --color-navy: #14243A;
-  --color-navy-50: #F4F6F9;
-  --color-navy-100: #E6EBF2;
-  --color-navy-200: #CAD5E3;
-  --color-navy-700: #233B5D;
-  --color-navy-800: #1A2E49;
-  --color-navy-900: #14243A;
-  --color-navy-950: #0C1726;
+  /* ==========================================================================
+     SOFISAM Official Brand Tokens (Extracted from https://sofisam-seven.vercel.app/)
+     ========================================================================== */
 
-  --color-gold: #B99A62;
-  --color-gold-50: #FAF7F2;
-  --color-gold-100: #F4EDE0;
-  --color-gold-200: #E7DAC1;
-  --color-gold-600: #A6874E;
-  --color-gold-700: #8D703D;
+  /* Dark Foundations (Header, Hero, Sidebar) */
+  --color-brand-char: #0B0B0D;       /* --char / Deep Luxury Charcoal */
+  --color-brand-void: #050505;       /* --void (dark) / Dark Canvas */
+  --color-brand-graphite: #131316;   /* --graphite / Dark Card Surface */
+  --color-brand-dark-hi: #191920;    /* --deep-hi / Dark Surface Highlight */
 
-  --color-corp-bg: #F6F7F9;
+  /* Primary Text & Deep Solid Elements */
+  --color-brand-ink: #171717;        /* --ivory (light) / Deep Ink Primary Text */
+  --color-brand-ink-hover: #2C2A26;  /* --btn-solid-hover */
+
+  /* Signature Gold & Brass Accents */
+  --color-brand-brass: #C7A46A;      /* --brass / Signature Gold Brass Accent */
+  --color-brand-gold: #7A5D33;       /* --gold / Deep Contrast Gold */
+  --color-brand-gold-hi: #604826;    /* --gold-hi / Rich Deep Gold */
+  --color-brand-gold-deep: #A88959;  /* --gold-deep */
+  --color-brand-gold-soft: #D8BE92;  /* --gold-soft / Light Warm Gold */
+
+  /* Canvas & Light Surfaces */
+  --color-brand-canvas: #F6F2EA;     /* --void (light) / Warm Paper Canvas */
+  --color-brand-plate: #FBF9F5;      /* --plate / Elevated Surface */
+  --color-brand-plate-hi: #FDFCF9;   /* --deep-hi (light) / Card Highlight */
+  --color-brand-surface-muted: #EEE8DC; /* --char (light) / Muted Surface */
+
+  /* Neutral Typography */
+  --color-brand-text: #171717;       /* --ivory / Primary Body & Headings */
+  --color-brand-stone: #66625B;      /* --stone / Secondary Body Text */
+  --color-brand-sage: #625F59;       /* --sage / Subtle Captions & Meta */
+  --color-brand-text-dark: #F2EEE6;  /* --ivory (dark) / Text on Dark */
+  --color-brand-stone-dark: #847E75; /* --stone (dark) / Secondary on Dark */
+
+  /* Architectural Borders & Lines */
+  --color-brand-line: #DED7CA;       /* --line / Standard Divider & Border */
+  --color-brand-line-soft: #EAE4D9;  /* --line-soft */
+  --color-brand-line-strong: #CDC4B3;/* --line-strong */
+  --color-brand-line-dark: rgba(242, 238, 230, 0.1);
+
+  /* Semantic Status Tokens (Institutional & Restrained) */
+  --color-brand-danger: #9A3F2C;     /* --field-error / Terracotta Crimson */
+  --color-brand-success: #2B6B48;    /* Muted Institutional Emerald */
+  --color-brand-warning: #C07D2B;    /* Warm Ochre Amber */
+  --color-brand-info: #3E5C76;       /* Restrained Muted Sapphire */
+
+  /* Direct Compatibility Aliases */
+  --color-navy: #0B0B0D;
+  --color-navy-50: #F6F2EA;
+  --color-navy-100: #EEE8DC;
+  --color-navy-200: #DED7CA;
+  --color-navy-700: #2C2A26;
+  --color-navy-800: #191920;
+  --color-navy-900: #131316;
+  --color-navy-950: #0B0B0D;
+
+  --color-gold: #C7A46A;
+  --color-gold-50: #FBF9F5;
+  --color-gold-100: #F6F2EA;
+  --color-gold-200: #D8BE92;
+  --color-gold-600: #A88959;
+  --color-gold-700: #7A5D33;
+
+  --color-corp-bg: #F6F2EA;
   --color-corp-card: #FFFFFF;
-  --color-corp-text: #182536;
-  --color-corp-muted: #7C8795;
-  --color-corp-border: #E5E9EF;
+  --color-corp-text: #171717;
+  --color-corp-muted: #66625B;
+  --color-corp-border: #DED7CA;
 }
 
 :root {
-  --background: #F6F7F9;
-  --foreground: #182536;
+  /* Central Brand Design Tokens */
+  --brand-primary: #0B0B0D;
+  --brand-secondary: #131316;
+  --brand-accent: #C7A46A;
+  --brand-accent-gold: #7A5D33;
+  --brand-accent-soft: #D8BE92;
+
+  --background: #F6F2EA;
+  --surface: #FFFFFF;
+  --surface-elevated: #FBF9F5;
+  --surface-muted: #EEE8DC;
+
+  --text-primary: #171717;
+  --text-secondary: #66625B;
+  --text-muted: #625F59;
+
+  --border: #DED7CA;
+  --border-strong: #CDC4B3;
+  --border-soft: #EAE4D9;
+
+  --success: #2B6B48;
+  --warning: #C07D2B;
+  --danger: #9A3F2C;
+  --info: #3E5C76;
+
+  --foreground: var(--text-primary);
 }
 
 body {
@@ -37,7 +108,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom scrollbar for enterprise table and sidebar */
+/* Custom scrollbar matching SOFISAM architectural dividers */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -46,9 +117,9 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D5DBE4;
+  background: #DED7CA;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #B6C0CF;
+  background: #CDC4B3;
 }

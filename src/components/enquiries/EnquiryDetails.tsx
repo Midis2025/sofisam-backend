@@ -125,30 +125,30 @@ export function EnquiryDetails({ initialEnquiry }: EnquiryDetailsProps) {
   return (
     <div className="space-y-6">
       {/* Top Navigation & Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4.5 rounded-xl border border-[#E5E9EF] shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4.5 rounded-xl border border-[#DED7CA] shadow-xs">
         <div className="flex items-center gap-3">
           <Link
             href="/enquiries"
-            className="p-2 rounded-lg text-[#7C8795] hover:bg-slate-100 hover:text-[#182536] transition-colors"
+            className="p-2 rounded-lg text-[#66625B] hover:bg-[#F6F2EA] hover:text-[#171717] transition-colors"
             title="Return to enquiries ledger"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-mono text-xs font-bold text-[#14243A] bg-slate-100 px-2 py-0.5 rounded">
+              <span className="font-mono text-xs font-bold text-[#171717] bg-[#F6F2EA] border border-[#DED7CA] px-2 py-0.5 rounded">
                 {enquiry.referenceId || enquiry.enquiryReference}
               </span>
               <FormTypeBadge formType={enquiry.formType} />
             </div>
-            <h2 className="text-lg font-bold text-[#182536] mt-0.5">{enquiry.name}</h2>
+            <h2 className="text-lg font-bold text-[#171717] mt-0.5">{enquiry.name}</h2>
           </div>
         </div>
 
         <div className="flex items-center gap-2.5">
           <a
             href={`mailto:${enquiry.email}?subject=RE: SOFISAM Mandate ${enquiry.referenceId || enquiry.enquiryReference}`}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium rounded-lg bg-[#14243A] text-white hover:bg-[#1E3554] shadow-xs transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium rounded-lg bg-[#171717] text-white hover:bg-[#2C2A26] shadow-xs transition-colors"
           >
             <Mail className="w-3.5 h-3.5" />
             <span>Direct Email</span>
@@ -158,7 +158,7 @@ export function EnquiryDetails({ initialEnquiry }: EnquiryDetailsProps) {
             variant="outline"
             size="sm"
             onClick={() => setDeleteModalOpen(true)}
-            className="text-xs text-rose-600 hover:bg-rose-50 hover:border-rose-200"
+            className="text-xs text-[#9A3F2C] hover:bg-rose-50 hover:border-rose-200"
           >
             <Trash2 className="w-3.5 h-3.5" />
             <span>Delete</span>
@@ -173,47 +173,47 @@ export function EnquiryDetails({ initialEnquiry }: EnquiryDetailsProps) {
           <Card>
             <CardHeader>
               <div>
-                <CardTitle>Mandate Request & Client Message</CardTitle>
-                <p className="text-xs text-[#7C8795] mt-0.5">
+                <CardTitle>Mandate Request &amp; Client Message</CardTitle>
+                <p className="text-xs text-[#66625B] mt-0.5">
                   Full context submitted from public portal
                 </p>
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Client Info Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-xl bg-slate-50 border border-[#E5E9EF]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-xl bg-[#FBF9F5] border border-[#DED7CA]">
                 <div>
-                  <span className="text-[11px] font-semibold text-[#7C8795] uppercase tracking-wider block">
+                  <span className="text-[11px] font-semibold text-[#66625B] uppercase tracking-wider block">
                     Full Name
                   </span>
-                  <span className="text-sm font-semibold text-[#182536] mt-0.5 block">
+                  <span className="text-sm font-semibold text-[#171717] mt-0.5 block">
                     {enquiry.name}
                   </span>
                 </div>
 
                 <div>
-                  <span className="text-[11px] font-semibold text-[#7C8795] uppercase tracking-wider block">
+                  <span className="text-[11px] font-semibold text-[#66625B] uppercase tracking-wider block">
                     Email Address
                   </span>
-                  <span className="text-sm font-semibold text-[#182536] mt-0.5 block">
+                  <span className="text-sm font-semibold text-[#171717] mt-0.5 block">
                     {enquiry.email}
                   </span>
                 </div>
 
                 <div>
-                  <span className="text-[11px] font-semibold text-[#7C8795] uppercase tracking-wider block">
+                  <span className="text-[11px] font-semibold text-[#66625B] uppercase tracking-wider block">
                     Company / Organization
                   </span>
-                  <span className="text-sm font-medium text-[#182536] mt-0.5 block">
+                  <span className="text-sm font-medium text-[#171717] mt-0.5 block">
                     {enquiry.company || enquiry.organisation || 'Not Specified'}
                   </span>
                 </div>
 
                 <div>
-                  <span className="text-[11px] font-semibold text-[#7C8795] uppercase tracking-wider block">
+                  <span className="text-[11px] font-semibold text-[#66625B] uppercase tracking-wider block">
                     Classification
                   </span>
-                  <span className="text-sm font-medium text-[#182536] mt-0.5 block">
+                  <span className="text-sm font-medium text-[#171717] mt-0.5 block">
                     {enquiry.formType === 'private_enquiry'
                       ? 'Private Office Mandate'
                       : 'Corporate Contact'}
@@ -221,10 +221,10 @@ export function EnquiryDetails({ initialEnquiry }: EnquiryDetailsProps) {
                 </div>
 
                 <div className="sm:col-span-2">
-                  <span className="text-[11px] font-semibold text-[#7C8795] uppercase tracking-wider block">
+                  <span className="text-[11px] font-semibold text-[#66625B] uppercase tracking-wider block">
                     Area of Interest
                   </span>
-                  <span className="text-sm font-medium text-[#B99A62] mt-0.5 block">
+                  <span className="text-sm font-medium text-[#7A5D33] mt-0.5 block">
                     {enquiry.areaOfInterest || 'General Institutional Advisory'}
                   </span>
                 </div>
@@ -232,22 +232,22 @@ export function EnquiryDetails({ initialEnquiry }: EnquiryDetailsProps) {
 
               {/* Message Body */}
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-[#7C8795] mb-2">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-[#66625B] mb-2">
                   Client Message
                 </h4>
-                <div className="p-4 rounded-xl bg-[#FBF8F2] border border-[#DFD3BD] text-sm text-[#182536] leading-relaxed whitespace-pre-wrap font-serif">
+                <div className="p-4 rounded-xl bg-[#FBF9F5] border border-[#DED7CA] border-l-3 border-l-[#C7A46A] text-sm text-[#171717] leading-relaxed whitespace-pre-wrap font-sans">
                   {enquiry.message}
                 </div>
               </div>
 
               {/* Submission Metadata */}
-              <div className="pt-4 border-t border-[#E5E9EF] grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-[#7C8795]">
+              <div className="pt-4 border-t border-[#DED7CA] grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-[#66625B]">
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-[#B99A62]" />
+                  <Calendar className="w-4 h-4 text-[#C7A46A]" />
                   <span>Submitted: {formatDate(enquiry.submittedAt)}</span>
                 </div>
                 <div className="flex items-center gap-2 truncate">
-                  <Globe className="w-4 h-4 text-[#B99A62]" />
+                  <Globe className="w-4 h-4 text-[#C7A46A]" />
                   <span className="truncate">Source: {enquiry.sourcePage}</span>
                 </div>
               </div>
@@ -258,30 +258,30 @@ export function EnquiryDetails({ initialEnquiry }: EnquiryDetailsProps) {
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-[#B99A62]" />
+                <MessageSquare className="w-4 h-4 text-[#C7A46A]" />
                 <CardTitle>Internal Executive Notes</CardTitle>
               </div>
-              <span className="text-xs text-[#7C8795]">Strictly confidential (Admin only)</span>
+              <span className="text-xs text-[#66625B]">Strictly confidential (Admin only)</span>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
                 {!enquiry.adminNotes || enquiry.adminNotes.length === 0 ? (
-                  <p className="text-xs text-[#7C8795] py-2 italic">
+                  <p className="text-xs text-[#66625B] py-2 italic">
                     No internal notes recorded yet for this client file.
                   </p>
                 ) : (
                   enquiry.adminNotes.map((note, index) => (
                     <div
                       key={note.id || index}
-                      className="p-3.5 rounded-lg bg-slate-50 border border-[#E5E9EF] text-xs space-y-1"
+                      className="p-3.5 rounded-lg bg-[#FBF9F5] border border-[#DED7CA] text-xs space-y-1"
                     >
-                      <div className="flex items-center justify-between text-[11px] text-[#7C8795]">
-                        <span className="font-semibold text-[#14243A]">
+                      <div className="flex items-center justify-between text-[11px] text-[#66625B]">
+                        <span className="font-semibold text-[#171717]">
                           {note.author || 'Administrator'}
                         </span>
                         <span>{formatDate(note.createdAt)}</span>
                       </div>
-                      <p className="text-sm text-[#182536] leading-relaxed">
+                      <p className="text-sm text-[#171717] leading-relaxed">
                         {note.content || note.note}
                       </p>
                     </div>
@@ -290,13 +290,13 @@ export function EnquiryDetails({ initialEnquiry }: EnquiryDetailsProps) {
               </div>
 
               {/* Add Note Form */}
-              <form onSubmit={handleAddNote} className="space-y-2 pt-3 border-t border-[#E5E9EF]">
+              <form onSubmit={handleAddNote} className="space-y-2 pt-3 border-t border-[#DED7CA]">
                 <textarea
                   rows={3}
                   value={newNote}
                   onChange={(e) => setNewNote(e.target.value)}
                   placeholder="Record internal consultation notes, follow-up actions or executive instructions..."
-                  className="w-full rounded-lg border border-[#E5E9EF] p-3 text-xs text-[#182536] placeholder-[#7C8795] focus:border-[#B99A62] focus:outline-none focus:ring-1 focus:ring-[#B99A62]"
+                  className="w-full rounded-lg border border-[#DED7CA] bg-white p-3 text-xs text-[#171717] placeholder-[#66625B] focus:border-[#C7A46A] focus:outline-none focus:ring-1 focus:ring-[#C7A46A]"
                 />
                 <div className="flex justify-end">
                   <Button
@@ -318,12 +318,12 @@ export function EnquiryDetails({ initialEnquiry }: EnquiryDetailsProps) {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Lifecycle & Governance</CardTitle>
+              <CardTitle>Lifecycle &amp; Governance</CardTitle>
             </CardHeader>
             <CardContent className="space-y-5">
               {/* Status Selector */}
               <div>
-                <label className="block text-xs font-semibold text-[#182536] mb-1.5">
+                <label className="block text-xs font-semibold text-[#171717] mb-1.5">
                   Current Status
                 </label>
                 <div className="mb-2">
@@ -339,14 +339,14 @@ export function EnquiryDetails({ initialEnquiry }: EnquiryDetailsProps) {
                   <option value="converted">Converted</option>
                   <option value="closed">Closed</option>
                 </Select>
-                <p className="text-[11px] text-[#7C8795] mt-1">
+                <p className="text-[11px] text-[#66625B] mt-1">
                   Updates workflow step for this enquiry.
                 </p>
               </div>
 
               {/* Priority Selector */}
-              <div className="pt-4 border-t border-[#E5E9EF]">
-                <label className="block text-xs font-semibold text-[#182536] mb-1.5">
+              <div className="pt-4 border-t border-[#DED7CA]">
+                <label className="block text-xs font-semibold text-[#171717] mb-1.5">
                   Priority Rating
                 </label>
                 <div className="mb-2">
@@ -363,16 +363,16 @@ export function EnquiryDetails({ initialEnquiry }: EnquiryDetailsProps) {
               </div>
 
               {/* Channel badge summary */}
-              <div className="pt-4 border-t border-[#E5E9EF] space-y-2">
-                <div className="text-xs font-semibold text-[#182536]">Channel Validation</div>
-                <div className="p-3 rounded-lg bg-slate-50 border border-[#E5E9EF] text-xs space-y-1">
-                  <div className="text-[#7C8795]">Classification:</div>
-                  <div className="font-semibold text-[#14243A]">
+              <div className="pt-4 border-t border-[#DED7CA] space-y-2">
+                <div className="text-xs font-semibold text-[#171717]">Channel Validation</div>
+                <div className="p-3 rounded-lg bg-[#FBF9F5] border border-[#DED7CA] text-xs space-y-1">
+                  <div className="text-[#66625B]">Classification:</div>
+                  <div className="font-semibold text-[#171717]">
                     {enquiry.formType === 'private_enquiry'
                       ? 'Private Office / Institutional Mandate'
                       : 'General Corporate Contact'}
                   </div>
-                  <div className="text-[11px] text-slate-400 pt-1">
+                  <div className="text-[11px] text-[#66625B] pt-1">
                     Customer acknowledgement email dispatched upon intake.
                   </div>
                 </div>
@@ -392,7 +392,7 @@ export function EnquiryDetails({ initialEnquiry }: EnquiryDetailsProps) {
         confirmVariant="danger"
         onConfirm={handleDelete}
       >
-        <p className="text-xs text-[#182536]">
+        <p className="text-xs text-[#171717]">
           This action will permanently delete record{' '}
           <strong>{enquiry.referenceId || enquiry.enquiryReference}</strong> from{' '}
           <strong>{enquiry.name}</strong>.

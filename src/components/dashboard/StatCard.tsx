@@ -25,20 +25,20 @@ export function StatCard({
   const isPositive = typeof change === 'number' && change >= 0;
 
   const iconStyles = {
-    default: 'bg-slate-100 text-[#14243A]',
-    gold: 'bg-[#B99A62]/15 text-[#8D703D]',
-    navy: 'bg-[#14243A]/10 text-[#14243A]',
-    info: 'bg-blue-50 text-blue-600',
+    default: 'bg-[#F6F2EA] text-[#171717]',
+    gold: 'bg-[#C7A46A]/15 text-[#7A5D33]',
+    navy: 'bg-[#171717]/8 text-[#171717]',
+    info: 'bg-[#F4EFE6] text-[#625F59]',
   };
 
   return (
     <Card className="relative p-6">
       <div className="flex items-start justify-between">
         <div>
-          <span className="text-xs font-medium uppercase tracking-wider text-[#7C8795]">
+          <span className="text-xs font-semibold uppercase tracking-wider text-[#66625B]">
             {title}
           </span>
-          <div className="mt-2 text-2xl lg:text-3xl font-bold tracking-tight text-[#182536]">
+          <div className="mt-2 text-2xl lg:text-3xl font-bold tracking-tight text-[#171717]">
             {value}
           </div>
         </div>
@@ -47,13 +47,13 @@ export function StatCard({
         </div>
       </div>
 
-      <div className="mt-4 flex items-center justify-between pt-3 border-t border-[#E5E9EF]/60">
-        <p className="text-xs text-[#7C8795] truncate">{description}</p>
+      <div className="mt-4 flex items-center justify-between pt-3 border-t border-[#DED7CA]/70">
+        <p className="text-xs text-[#66625B] truncate">{description}</p>
         {typeof change === 'number' && (
           <div
             className={cn(
               'flex items-center gap-1 text-xs font-semibold shrink-0 ml-2',
-              isPositive ? 'text-emerald-600' : 'text-rose-600'
+              isPositive ? 'text-[#2B6B48]' : 'text-[#9A3F2C]'
             )}
           >
             {isPositive ? (

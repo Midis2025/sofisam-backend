@@ -214,7 +214,7 @@ export default function EnquiriesPage() {
       fullWidth
     >
       <div className="w-full space-y-6">
-        <div className="flex items-center justify-between text-xs text-[#7C8795] -mt-2">
+        <div className="flex items-center justify-between text-xs text-[#66625B] -mt-2">
           <span>{totalItems} total records in MongoDB</span>
           <button
             onClick={() => {
@@ -222,7 +222,7 @@ export default function EnquiriesPage() {
               fetchEnquiries();
             }}
             disabled={isRefreshing}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-[#14243A] hover:bg-slate-100 rounded-md transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-[#171717] hover:bg-[#F6F2EA] rounded-md transition-colors disabled:opacity-50"
             title="Refresh list"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -239,10 +239,10 @@ export default function EnquiriesPage() {
         />
 
         {isLoading && enquiries.length === 0 ? (
-          <div className="bg-white rounded-xl border border-[#E5E9EF] p-16 text-center text-xs text-[#7C8795] min-h-[500px] flex flex-col items-center justify-center">
-            <div className="animate-spin inline-block w-6 h-6 border-2 border-slate-300 border-t-[#14243A] rounded-full mb-3"></div>
-            <p className="font-medium text-[#182536]">Loading enquiries from database...</p>
-            <p className="text-[11px] text-[#7C8795] mt-1">Fetching live client mandate ledger</p>
+          <div className="bg-white rounded-xl border border-[#DED7CA] p-16 text-center text-xs text-[#66625B] min-h-[500px] flex flex-col items-center justify-center">
+            <div className="animate-spin inline-block w-6 h-6 border-2 border-[#DED7CA] border-t-[#171717] rounded-full mb-3"></div>
+            <p className="font-medium text-[#171717]">Loading enquiries from database...</p>
+            <p className="text-[11px] text-[#66625B] mt-1">Fetching live client mandate ledger</p>
           </div>
         ) : (
           <EnquiryTable

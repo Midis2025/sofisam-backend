@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   Inbox,
   MailCheck,
+  Mail,
   Settings,
   Shield,
   ExternalLink,
@@ -14,6 +15,7 @@ import {
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SOFISAM_WHITE_LOGO_BASE64 } from '@/lib/branding';
 
 interface SidebarProps {
   isMobileOpen?: boolean;
@@ -38,6 +40,11 @@ const navItems = [
     icon: MailCheck,
   },
   {
+    name: 'Email Delivery',
+    href: '/emails',
+    icon: Mail,
+  },
+  {
     name: 'Settings',
     href: '/settings',
     icon: Settings,
@@ -48,30 +55,36 @@ export function Sidebar({ isMobileOpen, onCloseMobile }: SidebarProps) {
   const pathname = usePathname();
 
   const navContent = (
-    <div className="flex h-full flex-col justify-between bg-[#14243A] text-slate-100 select-none">
+    <div className="flex h-full flex-col justify-between bg-[#0B0B0D] text-[#F2EEE6] select-none border-r border-[#222120]">
       <div>
         {/* Brand Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-700/50">
-          <Link href="/dashboard" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded-lg bg-[#B99A62] flex items-center justify-center text-[#14243A] font-bold text-lg shadow-sm">
-              S
+        <div className="flex items-center justify-between px-6 py-5 border-b border-[#222120]">
+          <Link href="/dashboard" className="flex flex-col group">
+            <div className="flex items-center gap-2.5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo-white.png?v=2"
+                alt="SOFISAM"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  if (target.src !== SOFISAM_WHITE_LOGO_BASE64) {
+                    target.src = SOFISAM_WHITE_LOGO_BASE64;
+                  }
+                }}
+                className="h-7 w-auto object-contain transition-opacity group-hover:opacity-90"
+              />
+              <span className="text-[10px] uppercase font-semibold tracking-widest text-[#C7A46A] bg-[#C7A46A]/15 px-1.5 py-0.5 rounded border border-[#C7A46A]/25">
+                Admin
+              </span>
             </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-serif tracking-wider font-bold text-base text-white">
-                  SOFISAM
-                </span>
-                <span className="text-[10px] uppercase font-semibold tracking-widest text-[#B99A62] bg-[#B99A62]/15 px-1.5 py-0.5 rounded">
-                  Admin
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-400 font-medium">Enterprise Management</p>
-            </div>
+            <p className="text-[10px] text-[#847E75] font-medium tracking-wide mt-1.5 pl-0.5">
+              Enterprise Management
+            </p>
           </Link>
           {onCloseMobile && (
             <button
               onClick={onCloseMobile}
-              className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+              className="lg:hidden p-1.5 rounded-lg text-[#847E75] hover:text-[#F2EEE6] hover:bg-white/5"
             >
               <X className="w-5 h-5" />
             </button>
@@ -80,7 +93,7 @@ export function Sidebar({ isMobileOpen, onCloseMobile }: SidebarProps) {
 
         {/* Main Navigation */}
         <div className="px-4 py-6">
-          <div className="px-3 mb-2 text-[11px] font-semibold tracking-wider uppercase text-slate-400">
+          <div className="px-3 mb-2 text-[11px] font-semibold tracking-wider uppercase text-[#847E75]">
             Operations
           </div>
           <nav className="space-y-1.5">
@@ -99,24 +112,24 @@ export function Sidebar({ isMobileOpen, onCloseMobile }: SidebarProps) {
                   className={cn(
                     'group relative flex items-center justify-between rounded-lg px-3.5 py-2.5 text-sm font-medium transition-all duration-150',
                     isActive
-                      ? 'bg-[#1D324E] text-[#B99A62] shadow-xs'
-                      : 'text-slate-300 hover:bg-[#1A2E47] hover:text-white'
+                      ? 'bg-[#191920] text-[#C7A46A] shadow-xs'
+                      : 'text-[#B8B2A7] hover:bg-white/5 hover:text-[#F2EEE6]'
                   )}
                 >
                   <div className="flex items-center gap-3">
                     <Icon
                       className={cn(
                         'w-4.5 h-4.5 transition-colors',
-                        isActive ? 'text-[#B99A62]' : 'text-slate-400 group-hover:text-slate-200'
+                        isActive ? 'text-[#C7A46A]' : 'text-[#847E75] group-hover:text-[#DED8CC]'
                       )}
                     />
                     <span>{item.name}</span>
                   </div>
                   {isActive && (
-                    <div className="w-1.5 h-5 rounded-full bg-[#B99A62] absolute left-0 top-1/2 -translate-y-1/2" />
+                    <div className="w-1.5 h-5 rounded-full bg-[#C7A46A] absolute left-0 top-1/2 -translate-y-1/2" />
                   )}
                   {item.badge && !isActive && (
-                    <span className="px-1.5 py-0.5 text-[10px] font-bold tracking-wide rounded bg-blue-500/20 text-blue-300 border border-blue-400/20">
+                    <span className="px-1.5 py-0.5 text-[10px] font-bold tracking-wide rounded bg-[#C7A46A]/20 text-[#C7A46A] border border-[#C7A46A]/30">
                       {item.badge}
                     </span>
                   )}
@@ -128,24 +141,24 @@ export function Sidebar({ isMobileOpen, onCloseMobile }: SidebarProps) {
       </div>
 
       {/* Footer / System Info */}
-      <div className="p-4 border-t border-slate-700/50 space-y-3">
+      <div className="p-4 border-t border-[#222120] space-y-3">
         {/* Quick link to live public site */}
         <a
           href="https://sofisam-seven.vercel.app/"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-between px-3 py-2 rounded-lg bg-[#0F1B2C] hover:bg-[#16273E] text-xs text-slate-300 transition-colors group border border-slate-700/40"
+          className="flex items-center justify-between px-3 py-2 rounded-lg bg-[#131316] hover:bg-[#191920] text-xs text-[#DED8CC] transition-colors group border border-[#222120]"
         >
           <div className="flex items-center gap-2">
-            <ExternalLink className="w-3.5 h-3.5 text-[#B99A62]" />
+            <ExternalLink className="w-3.5 h-3.5 text-[#C7A46A]" />
             <span className="font-medium">Public Portal</span>
           </div>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+          <ChevronRight className="w-3.5 h-3.5 text-[#847E75] group-hover:translate-x-0.5 transition-transform" />
         </a>
 
         {/* Security indicator */}
-        <div className="flex items-center gap-2 px-3 py-1.5 text-[11px] text-slate-400">
-          <Shield className="w-3.5 h-3.5 text-emerald-400" />
+        <div className="flex items-center gap-2 px-3 py-1.5 text-[11px] text-[#847E75]">
+          <Shield className="w-3.5 h-3.5 text-[#2B6B48]" />
           <span>Single-Admin Active</span>
         </div>
       </div>
@@ -155,7 +168,7 @@ export function Sidebar({ isMobileOpen, onCloseMobile }: SidebarProps) {
   return (
     <>
       {/* Desktop Fixed Sidebar */}
-      <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:w-64 lg:flex-col shadow-lg">
+      <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:w-64 lg:flex-col shadow-xl">
         {navContent}
       </aside>
 
@@ -163,7 +176,7 @@ export function Sidebar({ isMobileOpen, onCloseMobile }: SidebarProps) {
       {isMobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div
-            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"
+            className="fixed inset-0 bg-[#050505]/75 backdrop-blur-xs transition-opacity"
             onClick={onCloseMobile}
           />
           <div className="fixed inset-y-0 left-0 z-50 w-72 shadow-2xl transition-transform">

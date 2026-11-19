@@ -149,9 +149,9 @@ export default function SetupPage() {
 
   if (checkingStatus) {
     return (
-      <div className="min-h-screen bg-[#F6F7F9] flex flex-col justify-center items-center p-4">
-        <div className="flex items-center gap-3 text-xs text-[#7C8795]">
-          <span className="w-4 h-4 border-2 border-[#14243A] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#F6F2EA] flex flex-col justify-center items-center p-4">
+        <div className="flex items-center gap-3 text-xs text-[#66625B]">
+          <span className="w-4 h-4 border-2 border-[#171717] border-t-transparent rounded-full animate-spin" />
           <span>Verifying Super Admin registration availability...</span>
         </div>
       </div>
@@ -160,16 +160,16 @@ export default function SetupPage() {
 
   if (registrationClosed) {
     return (
-      <div className="min-h-screen bg-[#F6F7F9] flex flex-col justify-center items-center p-4">
-        <div className="w-full max-w-md bg-white rounded-2xl border border-[#E5E9EF] p-8 text-center shadow-lg">
-          <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-4 border border-amber-200">
+      <div className="min-h-screen bg-[#F6F2EA] flex flex-col justify-center items-center p-4">
+        <div className="w-full max-w-md bg-white rounded-2xl border border-[#DED7CA] p-8 text-center shadow-lg">
+          <div className="w-12 h-12 rounded-full bg-amber-50 text-[#C07D2B] flex items-center justify-center mx-auto mb-4 border border-amber-200">
             <ShieldCheck className="w-6 h-6" />
           </div>
-          <h2 className="text-lg font-bold text-[#182536]">Registration Unavailable</h2>
-          <p className="text-xs text-[#7C8795] mt-2">
+          <h2 className="text-lg font-bold text-[#171717]">Registration Unavailable</h2>
+          <p className="text-xs text-[#66625B] mt-2">
             Super Administrator registration is closed for this system. Only authorized administrators may sign in.
           </p>
-          <p className="text-xs text-[#B99A62] mt-4 font-semibold">
+          <p className="text-xs text-[#7A5D33] mt-4 font-semibold">
             Redirecting to sign in portal...
           </p>
         </div>
@@ -178,44 +178,46 @@ export default function SetupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F6F7F9] flex flex-col justify-center items-center p-4 py-12">
+    <div className="min-h-screen bg-[#F6F2EA] flex flex-col justify-center items-center p-4 py-12">
       <div className="w-full max-w-lg">
         {/* Brand Header */}
         <div className="text-center mb-6">
-          <div className="inline-flex w-14 h-14 rounded-2xl bg-[#14243A] items-center justify-center text-[#B99A62] font-serif font-bold text-2xl shadow-lg border border-[#B99A62]/30 mb-3">
-            S
+          <div className="flex justify-center mb-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://sofisam-seven.vercel.app/logo-dark.png"
+              alt="SOFISAM"
+              className="h-11 sm:h-12 w-auto object-contain"
+            />
           </div>
-          <h1 className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-[#14243A]">
-            SOFISAM
-          </h1>
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#B99A62]/10 border border-[#B99A62]/30 text-[#8D703D] text-[11px] font-semibold mt-2">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#B99A62]" />
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#C7A46A]/10 border border-[#C7A46A]/30 text-[#7A5D33] text-[11px] font-semibold mt-2">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#C7A46A]" />
             First-Time Super Admin Registration
           </div>
         </div>
 
         {/* Setup Card */}
-        <div className="bg-white rounded-2xl border border-[#E5E9EF] p-6 sm:p-8 shadow-[0_10px_25px_rgba(20,36,58,0.06)]">
-          <div className="mb-6 pb-4 border-b border-[#E5E9EF]">
-            <h2 className="text-base font-bold text-[#182536]">Register Super Administrator</h2>
-            <p className="text-xs text-[#7C8795] mt-1">
+        <div className="bg-white rounded-2xl border border-[#DED7CA] p-6 sm:p-8 shadow-[0_10px_35px_rgba(40,30,15,0.06)]">
+          <div className="mb-6 pb-4 border-b border-[#DED7CA]">
+            <h2 className="text-base font-bold text-[#171717]">Register Super Administrator</h2>
+            <p className="text-xs text-[#66625B] mt-1">
               Create your primary corporate administrator account. Once registered, this account is granted the Super Admin authority and public registration is permanently disabled.
             </p>
           </div>
 
           {error && (
-            <div className="mb-5 p-3 rounded-xl bg-rose-50 border border-rose-200 flex items-start gap-2.5 text-xs text-rose-700 animate-in fade-in">
+            <div className="mb-5 p-3 rounded-xl bg-rose-50 border border-rose-200 flex items-start gap-2.5 text-xs text-[#9A3F2C] animate-in fade-in">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
 
           {success && (
-            <div className="mb-5 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-start gap-2.5 text-xs text-emerald-800 animate-in fade-in">
-              <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-emerald-600" />
+            <div className="mb-5 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-start gap-2.5 text-xs text-[#2B6B48] animate-in fade-in">
+              <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-[#2B6B48]" />
               <div>
                 <p className="font-semibold">Super Administrator registered successfully!</p>
-                <p className="text-[11px] text-emerald-700 mt-0.5">
+                <p className="text-[11px] text-[#2B6B48] mt-0.5">
                   Establishing your authenticated session and redirecting to the Executive Dashboard...
                 </p>
               </div>
@@ -225,7 +227,7 @@ export default function SetupPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Full Name */}
             <div>
-              <label className="block text-xs font-semibold text-[#182536] mb-1.5">
+              <label className="block text-xs font-semibold text-[#171717] mb-1.5">
                 Full Name
               </label>
               <Input
@@ -241,7 +243,7 @@ export default function SetupPage() {
 
             {/* Email Address */}
             <div>
-              <label className="block text-xs font-semibold text-[#182536] mb-1.5">
+              <label className="block text-xs font-semibold text-[#171717] mb-1.5">
                 Email Address
               </label>
               <Input
@@ -258,17 +260,17 @@ export default function SetupPage() {
             {/* Password */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-semibold text-[#182536]">
+                <label className="block text-xs font-semibold text-[#171717]">
                   Master Password
                 </label>
                 {strengthLabel && (
                   <span
                     className={`text-[10px] font-bold ${
                       strengthScore <= 2
-                        ? 'text-rose-600'
+                        ? 'text-[#9A3F2C]'
                         : strengthScore === 3
-                        ? 'text-amber-600'
-                        : 'text-emerald-600'
+                        ? 'text-[#C07D2B]'
+                        : 'text-[#2B6B48]'
                     }`}
                   >
                     {strengthLabel}
@@ -288,7 +290,7 @@ export default function SetupPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#7C8795] hover:text-[#182536] p-1 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#66625B] hover:text-[#171717] p-1 transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -304,45 +306,45 @@ export default function SetupPage() {
                         className={`h-full rounded-full transition-colors ${
                           step <= strengthScore
                             ? strengthScore <= 2
-                              ? 'bg-rose-500'
+                              ? 'bg-[#9A3F2C]'
                               : strengthScore === 3
-                              ? 'bg-amber-500'
-                              : 'bg-emerald-500'
-                            : 'bg-slate-200'
+                              ? 'bg-[#C07D2B]'
+                              : 'bg-[#2B6B48]'
+                            : 'bg-[#EEE8DC]'
                         }`}
                       />
                     ))}
                   </div>
-                  <div className="grid grid-cols-2 gap-1 text-[10px] text-[#7C8795]">
+                  <div className="grid grid-cols-2 gap-1 text-[10px] text-[#66625B]">
                     <span className="flex items-center gap-1">
                       {passwordCriteria.length ? (
-                        <Check className="w-3 h-3 text-emerald-600" />
+                        <Check className="w-3 h-3 text-[#2B6B48]" />
                       ) : (
-                        <X className="w-3 h-3 text-slate-300" />
+                        <X className="w-3 h-3 text-[#98948D]" />
                       )}
                       At least 8 characters
                     </span>
                     <span className="flex items-center gap-1">
                       {passwordCriteria.upper ? (
-                        <Check className="w-3 h-3 text-emerald-600" />
+                        <Check className="w-3 h-3 text-[#2B6B48]" />
                       ) : (
-                        <X className="w-3 h-3 text-slate-300" />
+                        <X className="w-3 h-3 text-[#98948D]" />
                       )}
                       Uppercase letter
                     </span>
                     <span className="flex items-center gap-1">
                       {passwordCriteria.lower ? (
-                        <Check className="w-3 h-3 text-emerald-600" />
+                        <Check className="w-3 h-3 text-[#2B6B48]" />
                       ) : (
-                        <X className="w-3 h-3 text-slate-300" />
+                        <X className="w-3 h-3 text-[#98948D]" />
                       )}
                       Lowercase letter
                     </span>
                     <span className="flex items-center gap-1">
                       {passwordCriteria.number ? (
-                        <Check className="w-3 h-3 text-emerald-600" />
+                        <Check className="w-3 h-3 text-[#2B6B48]" />
                       ) : (
-                        <X className="w-3 h-3 text-slate-300" />
+                        <X className="w-3 h-3 text-[#98948D]" />
                       )}
                       Number (0-9)
                     </span>
@@ -353,7 +355,7 @@ export default function SetupPage() {
 
             {/* Confirm Password */}
             <div>
-              <label className="block text-xs font-semibold text-[#182536] mb-1.5">
+              <label className="block text-xs font-semibold text-[#171717] mb-1.5">
                 Confirm Password
               </label>
               <div className="relative">
@@ -370,7 +372,7 @@ export default function SetupPage() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#7C8795] hover:text-[#182536] p-1 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#66625B] hover:text-[#171717] p-1 transition-colors"
                 >
                   {showConfirmPassword ? (
                     <EyeOff className="w-4 h-4" />
@@ -380,7 +382,7 @@ export default function SetupPage() {
                 </button>
               </div>
               {!passwordsMatch && (
-                <p className="text-[11px] text-rose-600 mt-1">Passwords do not match.</p>
+                <p className="text-[11px] text-[#9A3F2C] mt-1">Passwords do not match.</p>
               )}
             </div>
 
@@ -389,7 +391,7 @@ export default function SetupPage() {
               type="submit"
               variant="primary"
               size="lg"
-              className="w-full mt-4 bg-[#14243A] hover:bg-[#1C3250]"
+              className="w-full mt-4 bg-[#171717] hover:bg-[#2C2A26] font-semibold"
               isLoading={isLoading}
               disabled={success || !passwordsMatch || strengthScore < 4}
             >
@@ -398,17 +400,17 @@ export default function SetupPage() {
             </Button>
           </form>
 
-          <div className="mt-6 pt-4 border-t border-[#E5E9EF] text-center text-[11px] text-[#7C8795]">
+          <div className="mt-6 pt-4 border-t border-[#DED7CA] text-center text-[11px] text-[#66625B]">
             Already set up?{' '}
-            <a href="/login" className="font-semibold text-[#B99A62] hover:underline">
+            <a href="/login" className="font-semibold text-[#7A5D33] hover:text-[#C7A46A] hover:underline">
               Sign In to Admin Portal
             </a>
           </div>
         </div>
 
         {/* Footer */}
-        <p className="text-center text-xs text-[#7C8795] mt-6">
-          © {new Date().getFullYear()} SOFISAM. All rights reserved.
+        <p className="text-center text-xs text-[#66625B] mt-6">
+          &copy; {new Date().getFullYear()} SOFISAM FZCO. All rights reserved.
         </p>
       </div>
     </div>
