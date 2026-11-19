@@ -211,8 +211,9 @@ export default function EnquiriesPage() {
     <DashboardLayout
       title="Client Mandates & Enquiries"
       subtitle="Complete ledger of Private Office submissions and General Contact requests"
+      fullWidth
     >
-      <div className="space-y-6">
+      <div className="w-full space-y-6">
         <div className="flex items-center justify-between text-xs text-[#7C8795] -mt-2">
           <span>{totalItems} total records in MongoDB</span>
           <button
@@ -238,9 +239,10 @@ export default function EnquiriesPage() {
         />
 
         {isLoading && enquiries.length === 0 ? (
-          <div className="bg-white rounded-xl border border-[#E5E9EF] p-12 text-center text-xs text-[#7C8795]">
-            <div className="animate-spin inline-block w-5 h-5 border-2 border-slate-300 border-t-[#14243A] rounded-full mb-3"></div>
-            <p>Loading enquiries from database...</p>
+          <div className="bg-white rounded-xl border border-[#E5E9EF] p-16 text-center text-xs text-[#7C8795] min-h-[500px] flex flex-col items-center justify-center">
+            <div className="animate-spin inline-block w-6 h-6 border-2 border-slate-300 border-t-[#14243A] rounded-full mb-3"></div>
+            <p className="font-medium text-[#182536]">Loading enquiries from database...</p>
+            <p className="text-[11px] text-[#7C8795] mt-1">Fetching live client mandate ledger</p>
           </div>
         ) : (
           <EnquiryTable
@@ -248,7 +250,9 @@ export default function EnquiriesPage() {
             currentPage={filters.page}
             totalPages={totalPages}
             totalItems={totalItems}
+            pageSize={filters.limit}
             onPageChange={(page) => handleFilterChange({ page })}
+            onPageSizeChange={(limit) => handleFilterChange({ limit, page: 1 })}
             onStatusChange={handleStatusChange}
             onDeleteEnquiry={handleDeleteEnquiry}
           />

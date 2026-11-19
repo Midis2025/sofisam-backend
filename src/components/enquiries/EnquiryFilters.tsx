@@ -26,7 +26,7 @@ export function EnquiryFilters({
     <div className="bg-white rounded-xl border border-[#E5E9EF] p-4.5 shadow-[0_1px_3px_rgba(0,0,0,0.03)] space-y-4">
       {/* Top row: Search & Action Buttons */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="w-full sm:max-w-md">
+        <div className="w-full sm:max-w-md lg:max-w-lg">
           <Input
             icon={<Search className="w-4 h-4" />}
             placeholder="Search by prospect name, email, or company..."

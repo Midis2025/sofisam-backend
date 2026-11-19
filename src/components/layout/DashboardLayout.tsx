@@ -8,9 +8,15 @@ interface DashboardLayoutProps {
   children: React.ReactNode;
   title?: string;
   subtitle?: string;
+  fullWidth?: boolean;
 }
 
-export function DashboardLayout({ children, title, subtitle }: DashboardLayoutProps) {
+export function DashboardLayout({
+  children,
+  title,
+  subtitle,
+  fullWidth = false,
+}: DashboardLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -28,7 +34,13 @@ export function DashboardLayout({ children, title, subtitle }: DashboardLayoutPr
         />
 
         {/* Page Content */}
-        <main className="flex-1 p-4 md:p-8 max-w-7xl w-full mx-auto">
+        <main
+          className={`flex-1 w-full mx-auto transition-all ${
+            fullWidth
+              ? 'p-4 sm:p-6 lg:p-8 max-w-none'
+              : 'p-4 md:p-6 lg:p-8 max-w-7xl'
+          }`}
+        >
           {children}
         </main>
       </div>

@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Enquiry, EnquiryStatus } from '@/types';
 import { StatusBadge, PriorityBadge, FormTypeBadge } from '@/components/ui/Badge';
-import { formatDate } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import {
@@ -22,9 +21,32 @@ interface EnquiryTableProps {
   currentPage: number;
   totalPages: number;
   totalItems: number;
+  pageSize?: number;
   onPageChange: (page: number) => void;
+  onPageSizeChange?: (size: number) => void;
   onStatusChange?: (id: string, newStatus: EnquiryStatus) => void;
   onDeleteEnquiry?: (id: string) => void;
+}
+
+function formatDateTime(dateString: string | Date) {
+  try {
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) {
+      return { datePart: String(dateString), timePart: '' };
+    }
+    const datePart = new Intl.DateTimeFormat('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    }).format(d);
+    const timePart = new Intl.DateTimeFormat('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(d);
+    return { datePart, timePart };
+  } catch {
+    return { datePart: String(dateString), timePart: '' };
+  }
 }
 
 export function EnquiryTable({
@@ -32,7 +54,9 @@ export function EnquiryTable({
   currentPage,
   totalPages,
   totalItems,
+  pageSize = 10,
   onPageChange,
+  onPageSizeChange,
   onDeleteEnquiry,
 }: EnquiryTableProps) {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -46,28 +70,49 @@ export function EnquiryTable({
     setSelectedEnquiry(null);
   };
 
+  const startIndex = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const endIndex = Math.min(currentPage * pageSize, totalItems);
+
   return (
-    <div className="bg-white rounded-xl border border-[#E5E9EF] shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm">
+    <div className="bg-white rounded-xl border border-[#E5E9EF] shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-col justify-between min-h-[560px] lg:min-h-[640px] overflow-hidden w-full">
+      {/* Table Area */}
+      <div className="w-full overflow-x-auto lg:overflow-x-visible">
+        <table className="w-full text-left text-sm border-collapse">
+          {/* Proportional Column Sizing: Sums to 100% */}
+          <colgroup>
+            <col className="w-[12%] min-w-[105px]" />
+            <col className="w-[18%] min-w-[160px]" />
+            <col className="w-[14%] min-w-[130px]" />
+            <col className="w-[11%] min-w-[100px]" />
+            <col className="w-[17%] min-w-[150px]" />
+            <col className="w-[11%] min-w-[100px]" />
+            <col className="w-[8%] min-w-[75px]" />
+            <col className="w-[10%] min-w-[95px]" />
+            <col className="w-[7%] min-w-[70px]" />
+          </colgroup>
+
           <thead className="bg-[#F8F9FA] border-b border-[#E5E9EF] text-[11px] font-semibold uppercase tracking-wider text-[#7C8795]">
             <tr>
-              <th className="py-3.5 px-5">Ref ID</th>
-              <th className="py-3.5 px-5">Prospect / Client</th>
-              <th className="py-3.5 px-5">Company</th>
-              <th className="py-3.5 px-5">Channel</th>
-              <th className="py-3.5 px-5">Area of Interest</th>
-              <th className="py-3.5 px-5">Submitted</th>
-              <th className="py-3.5 px-5">Priority</th>
-              <th className="py-3.5 px-5">Status</th>
-              <th className="py-3.5 px-5 text-right">Actions</th>
+              <th className="py-4 px-3 xl:px-4">Ref ID</th>
+              <th className="py-4 px-3 xl:px-4">Prospect / Client</th>
+              <th className="py-4 px-3 xl:px-4">Company</th>
+              <th className="py-4 px-3 xl:px-4">Channel</th>
+              <th className="py-4 px-3 xl:px-4">Area of Interest</th>
+              <th className="py-4 px-3 xl:px-4">Submitted</th>
+              <th className="py-4 px-3 xl:px-4">Priority</th>
+              <th className="py-4 px-3 xl:px-4">Status</th>
+              <th className="py-4 px-3 xl:px-4 text-right">Actions</th>
             </tr>
           </thead>
+
           <tbody className="divide-y divide-[#E5E9EF] bg-white">
             {enquiries.length === 0 ? (
               <tr>
-                <td colSpan={9} className="py-12 text-center">
+                <td colSpan={9} className="py-24 text-center">
                   <div className="max-w-xs mx-auto text-center">
+                    <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3 text-slate-400">
+                      <Mail className="w-6 h-6 text-slate-400" />
+                    </div>
                     <p className="text-sm font-semibold text-[#182536]">No enquiries found</p>
                     <p className="text-xs text-[#7C8795] mt-1">
                       No matching mandate submissions found for the selected criteria.
@@ -76,126 +121,173 @@ export function EnquiryTable({
                 </td>
               </tr>
             ) : (
-              enquiries.map((enq) => (
-                <tr
-                  key={enq._id}
-                  className="hover:bg-slate-50/70 transition-colors group"
-                >
-                  {/* Reference ID */}
-                  <td className="py-3.5 px-5 whitespace-nowrap font-mono text-xs font-semibold text-[#14243A]">
-                    {enq.referenceId}
-                  </td>
+              enquiries.map((enq) => {
+                const { datePart, timePart } = formatDateTime(enq.submittedAt);
+                const ref = enq.referenceId || enq.enquiryReference || '';
+                const comp = enq.company || enq.organisation || '';
 
-                  {/* Client / Prospect */}
-                  <td className="py-3.5 px-5">
-                    <div className="font-semibold text-[#182536] group-hover:text-[#14243A]">
-                      {enq.name}
-                    </div>
-                    <div className="text-xs text-[#7C8795] flex items-center gap-1">
-                      <Mail className="w-3 h-3 text-slate-400" />
-                      <span>{enq.email}</span>
-                    </div>
-                  </td>
+                return (
+                  <tr
+                    key={enq._id}
+                    className="hover:bg-slate-50/70 transition-colors group"
+                  >
+                    {/* Reference ID */}
+                    <td className="py-4 px-3 xl:px-4 whitespace-nowrap font-mono text-xs font-semibold text-[#14243A]">
+                      {ref}
+                    </td>
 
-                  {/* Company */}
-                  <td className="py-3.5 px-5">
-                    <div className="text-xs font-medium text-[#182536] flex items-center gap-1">
-                      {enq.company ? (
-                        <>
-                          <Building2 className="w-3 h-3 text-[#B99A62]" />
-                          <span>{enq.company}</span>
-                        </>
+                    {/* Client / Prospect */}
+                    <td className="py-4 px-3 xl:px-4">
+                      <div
+                        className="font-semibold text-xs text-[#182536] group-hover:text-[#14243A] truncate leading-snug"
+                        title={enq.name}
+                      >
+                        {enq.name}
+                      </div>
+                      <div
+                        className="text-[11px] text-[#7C8795] flex items-center gap-1 mt-0.5 truncate"
+                        title={enq.email}
+                      >
+                        <Mail className="w-3 h-3 text-slate-400 shrink-0" />
+                        <span className="truncate">{enq.email}</span>
+                      </div>
+                    </td>
+
+                    {/* Company */}
+                    <td className="py-4 px-3 xl:px-4">
+                      <div className="text-xs font-medium text-[#182536] flex items-center gap-1.5 leading-snug">
+                        {comp ? (
+                          <>
+                            <Building2 className="w-3.5 h-3.5 text-[#B99A62] shrink-0" />
+                            <span className="truncate" title={comp}>
+                              {comp}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-slate-400">—</span>
+                        )}
+                      </div>
+                      {enq.title && (
+                        <div
+                          className="text-[11px] text-[#7C8795] truncate mt-0.5"
+                          title={enq.title}
+                        >
+                          {enq.title}
+                        </div>
+                      )}
+                    </td>
+
+                    {/* Channel / Form Type */}
+                    <td className="py-4 px-3 xl:px-4 whitespace-nowrap">
+                      <FormTypeBadge formType={enq.formType} />
+                    </td>
+
+                    {/* Area of Interest */}
+                    <td className="py-4 px-3 xl:px-4 text-xs text-[#182536]">
+                      {enq.areaOfInterest ? (
+                        <div
+                          className="line-clamp-2 leading-relaxed font-normal text-[#182536]"
+                          title={enq.areaOfInterest}
+                        >
+                          {enq.areaOfInterest}
+                        </div>
                       ) : (
                         <span className="text-slate-400">—</span>
                       )}
-                    </div>
-                    {enq.title && (
-                      <div className="text-[11px] text-[#7C8795]">{enq.title}</div>
-                    )}
-                  </td>
+                    </td>
 
-                  {/* Channel / Form Type */}
-                  <td className="py-3.5 px-5 whitespace-nowrap">
-                    <FormTypeBadge formType={enq.formType} />
-                  </td>
+                    {/* Submitted */}
+                    <td className="py-4 px-3 xl:px-4 whitespace-nowrap">
+                      <div className="text-xs font-medium text-[#182536] leading-tight">
+                        {datePart}
+                      </div>
+                      {timePart && (
+                        <div className="text-[11px] text-[#7C8795] font-mono mt-0.5">
+                          {timePart}
+                        </div>
+                      )}
+                    </td>
 
-                  {/* Area of Interest */}
-                  <td className="py-3.5 px-5 max-w-[200px] truncate text-xs text-[#182536]">
-                    {enq.areaOfInterest || <span className="text-slate-400">—</span>}
-                  </td>
+                    {/* Priority */}
+                    <td className="py-4 px-3 xl:px-4 whitespace-nowrap">
+                      <PriorityBadge priority={enq.priority} />
+                    </td>
 
-                  {/* Submitted */}
-                  <td className="py-3.5 px-5 whitespace-nowrap text-xs text-[#7C8795]">
-                    {formatDate(enq.submittedAt)}
-                  </td>
+                    {/* Status */}
+                    <td className="py-4 px-3 xl:px-4 whitespace-nowrap">
+                      <StatusBadge status={enq.status} />
+                    </td>
 
-                  {/* Priority */}
-                  <td className="py-3.5 px-5 whitespace-nowrap">
-                    <PriorityBadge priority={enq.priority} />
-                  </td>
+                    {/* Actions */}
+                    <td className="py-4 px-3 xl:px-4 text-right whitespace-nowrap">
+                      <div className="flex items-center justify-end gap-1">
+                        <Link
+                          href={`/enquiries/${enq._id}`}
+                          className="p-1.5 rounded-lg text-[#14243A] hover:bg-slate-100 hover:text-[#B99A62] transition-colors"
+                          title="View Full Details"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Link>
 
-                  {/* Status */}
-                  <td className="py-3.5 px-5 whitespace-nowrap">
-                    <StatusBadge status={enq.status} />
-                  </td>
-
-                  {/* Actions */}
-                  <td className="py-3.5 px-5 text-right whitespace-nowrap">
-                    <div className="flex items-center justify-end gap-1.5">
-                      <Link
-                        href={`/enquiries/${enq._id}`}
-                        className="p-1.5 rounded-lg text-[#14243A] hover:bg-slate-100 hover:text-[#B99A62] transition-colors"
-                        title="View Full Details"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Link>
-
-                      <button
-                        onClick={() => {
-                          setSelectedEnquiry(enq);
-                          setDeleteModalOpen(true);
-                        }}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
-                        title="Delete Enquiry"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
+                        <button
+                          onClick={() => {
+                            setSelectedEnquiry(enq);
+                            setDeleteModalOpen(true);
+                          }}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                          title="Delete Enquiry"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
       </div>
 
       {/* Pagination Footer */}
-      <div className="flex flex-col sm:flex-row items-center justify-between border-t border-[#E5E9EF] bg-[#F8F9FA] px-5 py-3 text-xs text-[#7C8795] gap-3">
-        <div>
-          Showing{' '}
-          <span className="font-semibold text-[#182536]">
-            {totalItems === 0 ? 0 : (currentPage - 1) * 10 + 1}
-          </span>{' '}
-          to{' '}
-          <span className="font-semibold text-[#182536]">
-            {Math.min(currentPage * 10, totalItems)}
-          </span>{' '}
-          of <span className="font-semibold text-[#182536]">{totalItems}</span> submissions
+      <div className="flex flex-col sm:flex-row items-center justify-between border-t border-[#E5E9EF] bg-[#F8F9FA] px-4 sm:px-6 py-3.5 text-xs text-[#7C8795] gap-3 mt-auto">
+        <div className="flex items-center gap-3">
+          <div>
+            Showing <span className="font-semibold text-[#182536]">{startIndex}</span> to{' '}
+            <span className="font-semibold text-[#182536]">{endIndex}</span> of{' '}
+            <span className="font-semibold text-[#182536]">{totalItems}</span> submissions
+          </div>
+
+          {onPageSizeChange && (
+            <div className="hidden md:flex items-center gap-1.5 pl-3 border-l border-[#E5E9EF]">
+              <span>Per page:</span>
+              <select
+                value={pageSize}
+                onChange={(e) => onPageSizeChange(Number(e.target.value))}
+                className="bg-white border border-[#E5E9EF] rounded px-1.5 py-0.5 text-xs text-[#182536] focus:border-[#B99A62] focus:outline-none"
+              >
+                <option value={10}>10</option>
+                <option value={15}>15</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+              </select>
+            </div>
+          )}
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage <= 1}
-            className="px-2 py-1 text-xs"
+            className="px-2.5 py-1 text-xs"
           >
             <ChevronLeft className="w-3.5 h-3.5 mr-1" />
             Previous
           </Button>
 
-          <span className="px-3 font-medium text-[#182536]">
+          <span className="px-2.5 font-medium text-[#182536]">
             Page {currentPage} of {totalPages || 1}
           </span>
 
@@ -204,7 +296,7 @@ export function EnquiryTable({
             size="sm"
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage >= totalPages}
-            className="px-2 py-1 text-xs"
+            className="px-2.5 py-1 text-xs"
           >
             Next
             <ChevronRight className="w-3.5 h-3.5 ml-1" />
@@ -227,8 +319,10 @@ export function EnquiryTable({
             <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
             <div className="text-xs text-rose-800">
               You are about to delete enquiry{' '}
-              <strong className="font-semibold">{selectedEnquiry?.referenceId}</strong> from{' '}
-              <strong className="font-semibold">{selectedEnquiry?.name}</strong>.
+              <strong className="font-semibold">
+                {selectedEnquiry?.referenceId || selectedEnquiry?.enquiryReference}
+              </strong>{' '}
+              from <strong className="font-semibold">{selectedEnquiry?.name}</strong>.
             </div>
           </div>
         </div>
