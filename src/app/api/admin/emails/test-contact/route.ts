@@ -4,12 +4,18 @@ import {
   getAdminRecipient,
   getSenderEmail,
   sendTestContactEnquiryEmail,
+  sendTestThankYouEmail,
 } from '@/lib/email';
 import {
   SAMPLE_CONTACT_ENQUIRY,
   renderContactEnquiryHtml,
   renderContactEnquiryText,
 } from '@/lib/email-templates/contact-enquiry';
+import {
+  SAMPLE_THANK_YOU_EMAIL,
+  renderThankYouEmailHtml,
+  renderThankYouEmailText,
+} from '@/lib/email-templates/thank-you';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,13 +25,35 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * GET /api/admin/emails/test-contact
  * Returns the template definition, sample payload, rendered HTML & plain-text,
  * and current recipient/sender configurations for the preview interface.
+ * Supports query param ?template=thank_you | admin
  */
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     await requireAdmin();
 
+    const templateType = req.nextUrl?.searchParams?.get('template') || 'admin';
     const recipient = getAdminRecipient();
     const sender = getSenderEmail();
+
+    if (templateType === 'thank_you') {
+      const samplePayload = SAMPLE_THANK_YOU_EMAIL;
+      const html = renderThankYouEmailHtml(samplePayload, { isClientPreview: true });
+      const text = renderThankYouEmailText(samplePayload);
+
+      return NextResponse.json({
+        success: true,
+        template: 'thank_you',
+        config: {
+          adminRecipient: recipient,
+          sender,
+          subject: `Thank You for Your Enquiry | SOFISAM | [TEST] ${samplePayload.referenceId}`,
+        },
+        sampleData: samplePayload,
+        renderedHtml: html,
+        renderedText: text,
+      });
+    }
+
     const samplePayload = SAMPLE_CONTACT_ENQUIRY || {
       referenceId: 'CNT-2026-8821',
       name: 'Dr. Marcus Vance',
@@ -47,6 +75,7 @@ export async function GET() {
 
     return NextResponse.json({
       success: true,
+      template: 'admin',
       config: {
         adminRecipient: recipient,
         sender,
@@ -78,8 +107,12 @@ export async function POST(req: NextRequest) {
     const admin = await requireAdmin();
 
     let customRecipient: string | undefined;
+    let templateTarget: 'admin' | 'thank_you' = 'admin';
     try {
       const body = await req.json();
+      if (body && typeof body.template === 'string' && body.template === 'thank_you') {
+        templateTarget = 'thank_you';
+      }
       if (body && typeof body.recipient === 'string') {
         const trimmed = body.recipient.trim();
         if (trimmed) {
@@ -101,9 +134,10 @@ export async function POST(req: NextRequest) {
 
     const targetRecipient = customRecipient || getAdminRecipient();
 
-    const result = await sendTestContactEnquiryEmail({
-      recipient: targetRecipient,
-    });
+    const result =
+      templateTarget === 'thank_you'
+        ? await sendTestThankYouEmail({ recipient: targetRecipient })
+        : await sendTestContactEnquiryEmail({ recipient: targetRecipient });
 
     if (!result.success) {
       let diagnosticHint = '';

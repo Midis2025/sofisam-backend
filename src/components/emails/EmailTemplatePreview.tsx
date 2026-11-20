@@ -20,6 +20,11 @@ import {
   renderContactEnquiryHtml,
   renderContactEnquiryText,
 } from '@/lib/email-templates/contact-enquiry';
+import {
+  SAMPLE_THANK_YOU_EMAIL,
+  renderThankYouEmailHtml,
+  renderThankYouEmailText,
+} from '@/lib/email-templates/thank-you';
 
 interface TestResultData {
   resendEmailId?: string;
@@ -36,7 +41,10 @@ interface EmailTemplatePreviewProps {
 }
 
 export function EmailTemplatePreview({ onViewActivity }: EmailTemplatePreviewProps) {
-  // Viewport mode: desktop (600px) | mobile (375px)
+  // Template selection: client thank-you vs internal admin alert
+  const [selectedTemplate, setSelectedTemplate] = useState<'thank_you' | 'admin'>('thank_you');
+
+  // Viewport mode: desktop (680px/600px) | mobile (375px)
   const [viewport, setViewport] = useState<'desktop' | 'mobile'>('desktop');
 
   // Format mode: rendered | text | source
@@ -57,9 +65,16 @@ export function EmailTemplatePreview({ onViewActivity }: EmailTemplatePreviewPro
   const [copiedResendId, setCopiedResendId] = useState<boolean>(false);
   const [copiedLogId, setCopiedLogId] = useState<boolean>(false);
 
-  // Pre-rendered template content
-  const htmlContent = renderContactEnquiryHtml(SAMPLE_CONTACT_ENQUIRY, { isClientPreview: true });
-  const textContent = renderContactEnquiryText(SAMPLE_CONTACT_ENQUIRY);
+  // Pre-rendered template content depending on selected template
+  const htmlContent =
+    selectedTemplate === 'thank_you'
+      ? renderThankYouEmailHtml(SAMPLE_THANK_YOU_EMAIL, { isClientPreview: true })
+      : renderContactEnquiryHtml(SAMPLE_CONTACT_ENQUIRY, { isClientPreview: true });
+
+  const textContent =
+    selectedTemplate === 'thank_you'
+      ? renderThankYouEmailText(SAMPLE_THANK_YOU_EMAIL)
+      : renderContactEnquiryText(SAMPLE_CONTACT_ENQUIRY);
 
   const handleSendTestEmail = async () => {
     if (isSending) return;
@@ -74,6 +89,7 @@ export function EmailTemplatePreview({ onViewActivity }: EmailTemplatePreviewPro
         },
         body: JSON.stringify({
           recipient: recipientInput.trim() || undefined,
+          template: selectedTemplate,
         }),
       });
 
@@ -158,8 +174,36 @@ export function EmailTemplatePreview({ onViewActivity }: EmailTemplatePreviewPro
       {/* 2. Interactive Controls & Test Dispatch Bar */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-md">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          {/* Viewport & Format Switchers */}
+          {/* Template & Viewport & Format Switchers */}
           <div className="flex flex-wrap items-center gap-3">
+            {/* Template Switcher */}
+            <div className="inline-flex items-center bg-slate-950 p-1 rounded-lg border border-slate-800">
+              <button
+                type="button"
+                onClick={() => setSelectedTemplate('thank_you')}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                  selectedTemplate === 'thank_you'
+                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                Customer Thank-You (Client)
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedTemplate('admin')}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                  selectedTemplate === 'admin'
+                    ? 'bg-slate-800 text-slate-100 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <FileText className="w-3.5 h-3.5" />
+                Admin Notification (Team)
+              </button>
+            </div>
+
             {/* Viewport Toggle */}
             <div className="inline-flex items-center bg-slate-950 p-1 rounded-lg border border-slate-800">
               <button

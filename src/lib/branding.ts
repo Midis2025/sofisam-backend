@@ -35,6 +35,7 @@ export const SOFISAM_BRAND = {
   // Asset URLs
   assets: {
     logoWhiteRelative: '/logo-white.png',
+    logoWhiteHttpsUrl: 'https://res.cloudinary.com/dntahkr0a/image/upload/v1795159231/logo-white-pdf_ftphqn.png',
     logoDarkUrl: 'https://sofisam-seven.vercel.app/logo-dark.png',
     logoCid: 'sofisam-logo-white',
   },

@@ -27,10 +27,8 @@ export function getEmailLogoHtml(options: EmailLogoOptions = {}): string {
     customUrl,
   } = options;
 
-  let src = 'cid:sofisam-logo-white';
-  if (customUrl) {
-    src = customUrl;
-  } else if (isClientPreview) {
+  let src = customUrl || SOFISAM_BRAND.assets.logoWhiteHttpsUrl;
+  if (isClientPreview) {
     src = SOFISAM_WHITE_LOGO_BASE64;
   }
 

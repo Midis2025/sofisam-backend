@@ -10,7 +10,13 @@ import {
   renderContactEnquiryHtml,
   renderContactEnquiryText,
 } from '@/lib/email-templates/contact-enquiry';
-import { getEmailLogoHtml, getEmailLogoAttachment } from '@/lib/email-branding';
+import {
+  ThankYouEmailData,
+  SAMPLE_THANK_YOU_EMAIL,
+  renderThankYouEmailHtml,
+  renderThankYouEmailText,
+} from '@/lib/email-templates/thank-you';
+import { getEmailLogoHtml } from '@/lib/email-branding';
 
 export function getResendClient(): Resend | null {
   const key = process.env.RESEND_API_KEY?.trim();
@@ -266,177 +272,212 @@ export async function sendEnquiryEmails(args: SendEnquiryEmailsArgs): Promise<{
   const ADMIN_RECIPIENT = getAdminRecipient();
   const resend = getResendClient();
 
-  // 1. Admin Notification Email
-  let adminSubject: string;
-  let adminHtml: string;
-  let adminText: string | undefined;
+  // 1. Admin Notification Email (Independent dispatch & duplicate protected)
+  try {
+    const existingAdminLog = await EmailLog.findOne({
+      relatedEnquiryReference: args.referenceId,
+      emailType: 'admin_notification',
+      status: { $in: ['queued', 'sent', 'delivered'] },
+    }).lean();
 
-  if (args.formType === 'contact') {
-    adminSubject = `New Contact Enquiry | SOFISAM | ${args.name}`;
-    adminHtml = renderContactEnquiryHtml({
-      referenceId: args.referenceId,
-      name: args.name,
-      email: args.email,
-      phone: args.phone,
-      company: args.company || args.organisation,
-      organisation: args.organisation || args.company,
-      subject: args.subject || args.areaOfInterest,
-      areaOfInterest: args.areaOfInterest || args.subject,
-      message: args.message,
-      submittedAt: args.submittedAt,
-      sourcePage: args.sourcePage,
-      websiteUrl: process.env.FRONTEND_URL || 'https://sofisam-seven.vercel.app',
-    });
-    adminText = renderContactEnquiryText({
-      referenceId: args.referenceId,
-      name: args.name,
-      email: args.email,
-      phone: args.phone,
-      company: args.company || args.organisation,
-      organisation: args.organisation || args.company,
-      subject: args.subject || args.areaOfInterest,
-      areaOfInterest: args.areaOfInterest || args.subject,
-      message: args.message,
-      submittedAt: args.submittedAt,
-      sourcePage: args.sourcePage,
-      websiteUrl: process.env.FRONTEND_URL || 'https://sofisam-seven.vercel.app',
-    });
-  } else {
-    adminSubject = `[SOFISAM] New ${typeLabel}: ${args.name} (${args.referenceId})`;
-    adminHtml = `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #F6F2EA; padding: 32px 16px; color: #171717;">
-      <div style="max-width: 600px; margin: 0 auto; background-color: #FFFFFF; border-radius: 12px; border: 1px solid #DED7CA; overflow: hidden; box-shadow: 0 4px 12px rgba(40,30,15,0.04);">
-        <div style="background-color: #0B0B0D; padding: 24px 32px; border-bottom: 3px solid #C7A46A;">
-          ${getEmailLogoHtml({ width: 130, height: 32 })}
-          <p style="color: #C7A46A; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin: 8px 0 0 0; font-weight: 600;">Executive Mandate Notification</p>
+    if (existingAdminLog) {
+      console.log(`[Email Dispatch] Admin notification already sent for ${args.referenceId}.`);
+      result.adminNotification = 'sent';
+    } else {
+      let adminSubject: string;
+      let adminHtml: string;
+      let adminText: string | undefined;
+
+      if (args.formType === 'contact') {
+        adminSubject = `New Contact Enquiry | SOFISAM | ${args.name}`;
+        adminHtml = renderContactEnquiryHtml({
+          referenceId: args.referenceId,
+          name: args.name,
+          email: args.email,
+          phone: args.phone,
+          company: args.company || args.organisation,
+          organisation: args.organisation || args.company,
+          subject: args.subject || args.areaOfInterest,
+          areaOfInterest: args.areaOfInterest || args.subject,
+          message: args.message,
+          submittedAt: args.submittedAt,
+          sourcePage: args.sourcePage,
+          websiteUrl: process.env.FRONTEND_URL || 'https://sofisam-seven.vercel.app',
+        });
+        adminText = renderContactEnquiryText({
+          referenceId: args.referenceId,
+          name: args.name,
+          email: args.email,
+          phone: args.phone,
+          company: args.company || args.organisation,
+          organisation: args.organisation || args.company,
+          subject: args.subject || args.areaOfInterest,
+          areaOfInterest: args.areaOfInterest || args.subject,
+          message: args.message,
+          submittedAt: args.submittedAt,
+          sourcePage: args.sourcePage,
+          websiteUrl: process.env.FRONTEND_URL || 'https://sofisam-seven.vercel.app',
+        });
+      } else {
+        adminSubject = `[SOFISAM] New ${typeLabel}: ${args.name} (${args.referenceId})`;
+        adminHtml = `
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #F6F2EA; padding: 32px 16px; color: #171717;">
+          <div style="max-width: 600px; margin: 0 auto; background-color: #FFFFFF; border-radius: 12px; border: 1px solid #DED7CA; overflow: hidden; box-shadow: 0 4px 12px rgba(40,30,15,0.04);">
+            <div style="background-color: #0B0B0D; padding: 24px 32px; border-bottom: 3px solid #C7A46A;">
+              ${getEmailLogoHtml({ width: 130, height: 32 })}
+              <p style="color: #C7A46A; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin: 8px 0 0 0; font-weight: 600;">Executive Mandate Notification</p>
+            </div>
+            <div style="padding: 32px;">
+              <div style="display: inline-block; background-color: #FBF9F5; border: 1px solid #DED7CA; color: #7A5D33; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 6px; text-transform: uppercase; margin-bottom: 20px;">
+                ${escapeHtml(typeLabel)}
+              </div>
+              <h2 style="font-size: 18px; margin: 0 0 16px 0; color: #171717;">New Submission: ${escapeHtml(args.referenceId)}</h2>
+              
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 13px;">
+                <tr>
+                  <td style="padding: 8px 0; color: #66625B; width: 140px; border-bottom: 1px solid #EAE4D9;">Client / Principal:</td>
+                  <td style="padding: 8px 0; color: #171717; font-weight: 600; border-bottom: 1px solid #EAE4D9;">${escapeHtml(args.name)}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #66625B; border-bottom: 1px solid #EAE4D9;">Email Address:</td>
+                  <td style="padding: 8px 0; color: #171717; border-bottom: 1px solid #EAE4D9;"><a href="mailto:${escapeHtml(args.email)}" style="color: #7A5D33; text-decoration: underline;">${escapeHtml(args.email)}</a></td>
+                </tr>
+                ${args.organisation ? `
+                <tr>
+                  <td style="padding: 8px 0; color: #66625B; border-bottom: 1px solid #EAE4D9;">Organisation:</td>
+                  <td style="padding: 8px 0; color: #171717; border-bottom: 1px solid #EAE4D9;">${escapeHtml(args.organisation)}</td>
+                </tr>` : ''}
+                ${args.areaOfInterest ? `
+                <tr>
+                  <td style="padding: 8px 0; color: #66625B; border-bottom: 1px solid #EAE4D9;">Area of Interest:</td>
+                  <td style="padding: 8px 0; color: #C7A46A; font-weight: 600; border-bottom: 1px solid #EAE4D9;">${escapeHtml(args.areaOfInterest)}</td>
+                </tr>` : ''}
+                <tr>
+                  <td style="padding: 8px 0; color: #66625B; border-bottom: 1px solid #EAE4D9;">Source Page:</td>
+                  <td style="padding: 8px 0; color: #66625B; border-bottom: 1px solid #EAE4D9;">${escapeHtml(args.sourcePage)}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #66625B;">Submission Time:</td>
+                  <td style="padding: 8px 0; color: #171717;">${new Date(args.submittedAt).toUTCString()}</td>
+                </tr>
+              </table>
+
+              <div style="background-color: #FBF9F5; border: 1px solid #DED7CA; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+                <p style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #66625B; margin: 0 0 8px 0; font-weight: 700;">Client Message</p>
+                <p style="font-family: Georgia, serif; font-size: 14px; line-height: 1.6; color: #171717; margin: 0; white-space: pre-wrap;">${escapeHtml(args.message)}</p>
+              </div>
+
+              <div style="text-align: center; padding-top: 12px;">
+                <a href="https://sofisam-backend.vercel.app/enquiries" style="display: inline-block; background-color: #0B0B0D; color: #F2EEE6; font-size: 13px; font-weight: 600; padding: 12px 24px; border-radius: 8px; text-decoration: none;">Review in Admin Dashboard</a>
+              </div>
+            </div>
+          </div>
         </div>
-        <div style="padding: 32px;">
-          <div style="display: inline-block; background-color: #FBF9F5; border: 1px solid #DED7CA; color: #7A5D33; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 6px; text-transform: uppercase; margin-bottom: 20px;">
-            ${escapeHtml(typeLabel)}
-          </div>
-          <h2 style="font-size: 18px; margin: 0 0 16px 0; color: #171717;">New Submission: ${escapeHtml(args.referenceId)}</h2>
-          
-          <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 13px;">
-            <tr>
-              <td style="padding: 8px 0; color: #66625B; width: 140px; border-bottom: 1px solid #EAE4D9;">Client / Principal:</td>
-              <td style="padding: 8px 0; color: #171717; font-weight: 600; border-bottom: 1px solid #EAE4D9;">${escapeHtml(args.name)}</td>
-            </tr>
-            <tr>
-              <td style="padding: 8px 0; color: #66625B; border-bottom: 1px solid #EAE4D9;">Email Address:</td>
-              <td style="padding: 8px 0; color: #171717; border-bottom: 1px solid #EAE4D9;"><a href="mailto:${escapeHtml(args.email)}" style="color: #7A5D33; text-decoration: underline;">${escapeHtml(args.email)}</a></td>
-            </tr>
-            ${args.organisation ? `
-            <tr>
-              <td style="padding: 8px 0; color: #66625B; border-bottom: 1px solid #EAE4D9;">Organisation:</td>
-              <td style="padding: 8px 0; color: #171717; border-bottom: 1px solid #EAE4D9;">${escapeHtml(args.organisation)}</td>
-            </tr>` : ''}
-            ${args.areaOfInterest ? `
-            <tr>
-              <td style="padding: 8px 0; color: #66625B; border-bottom: 1px solid #EAE4D9;">Area of Interest:</td>
-              <td style="padding: 8px 0; color: #C7A46A; font-weight: 600; border-bottom: 1px solid #EAE4D9;">${escapeHtml(args.areaOfInterest)}</td>
-            </tr>` : ''}
-            <tr>
-              <td style="padding: 8px 0; color: #66625B; border-bottom: 1px solid #EAE4D9;">Source Page:</td>
-              <td style="padding: 8px 0; color: #66625B; border-bottom: 1px solid #EAE4D9;">${escapeHtml(args.sourcePage)}</td>
-            </tr>
-            <tr>
-              <td style="padding: 8px 0; color: #66625B;">Submission Time:</td>
-              <td style="padding: 8px 0; color: #171717;">${new Date(args.submittedAt).toUTCString()}</td>
-            </tr>
-          </table>
+        `;
+      }
 
-          <div style="background-color: #FBF9F5; border: 1px solid #DED7CA; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
-            <p style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #66625B; margin: 0 0 8px 0; font-weight: 700;">Client Message</p>
-            <p style="font-family: Georgia, serif; font-size: 14px; line-height: 1.6; color: #171717; margin: 0; white-space: pre-wrap;">${escapeHtml(args.message)}</p>
-          </div>
+      const adminDispatch = await dispatchAndLogEmail({
+        recipient: ADMIN_RECIPIENT,
+        sender: SENDER_EMAIL,
+        subject: adminSubject,
+        emailType: 'admin_notification',
+        relatedEnquiryReference: args.referenceId,
+        executeSend: () =>
+          resend!.emails.send({
+            from: SENDER_EMAIL,
+            to: ADMIN_RECIPIENT,
+            subject: adminSubject,
+            html: adminHtml,
+            ...(adminText ? { text: adminText } : {}),
+          }),
+      });
 
-          <div style="text-align: center; padding-top: 12px;">
-            <a href="https://sofisam-backend.vercel.app/enquiries" style="display: inline-block; background-color: #0B0B0D; color: #F2EEE6; font-size: 13px; font-weight: 600; padding: 12px 24px; border-radius: 8px; text-decoration: none;">Review in Admin Dashboard</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
+      result.adminNotification = adminDispatch.success ? 'sent' : 'failed';
+    }
+  } catch (adminErr) {
+    console.error(`[Email Dispatch] Failed admin notification for ${args.referenceId}:`, adminErr);
+    result.adminNotification = 'failed';
   }
 
-  const adminDispatch = await dispatchAndLogEmail({
-    recipient: ADMIN_RECIPIENT,
-    sender: SENDER_EMAIL,
-    subject: adminSubject,
-    emailType: 'admin_notification',
-    relatedEnquiryReference: args.referenceId,
-    executeSend: () =>
-      resend!.emails.send({
-        from: SENDER_EMAIL,
-        to: ADMIN_RECIPIENT,
-        subject: adminSubject,
-        html: adminHtml,
-        ...(adminText ? { text: adminText } : {}),
-        attachments: [getEmailLogoAttachment()],
-      }),
-  });
+  // 2. Customer Acknowledgement Email (Using official architectural thank-you template; duplicate protected)
+  try {
+    const existingCustLog = await EmailLog.findOne({
+      relatedEnquiryReference: args.referenceId,
+      emailType: 'customer_acknowledgement',
+      status: { $in: ['queued', 'sent', 'delivered'] },
+    }).lean();
 
-  result.adminNotification = adminDispatch.success ? 'sent' : 'failed';
+    if (existingCustLog) {
+      console.log(`[Email Dispatch] Customer thank-you email already sent for ${args.referenceId}.`);
+      result.customerAcknowledgement = 'sent';
+    } else {
+      const customerSubject = `Thank You for Your Enquiry | SOFISAM | ${args.referenceId}`;
+      const customerHtml = renderThankYouEmailHtml({
+        name: args.name,
+        email: args.email,
+        referenceId: args.referenceId,
+        enquiryType: typeLabel,
+        organisation: args.organisation || args.company,
+        areaOfInterest: args.areaOfInterest || args.subject,
+        submittedAt: args.submittedAt,
+        websiteUrl: process.env.FRONTEND_URL || 'https://sofisam-seven.vercel.app',
+      });
+      const customerText = renderThankYouEmailText({
+        name: args.name,
+        email: args.email,
+        referenceId: args.referenceId,
+        enquiryType: typeLabel,
+        organisation: args.organisation || args.company,
+        areaOfInterest: args.areaOfInterest || args.subject,
+        submittedAt: args.submittedAt,
+        websiteUrl: process.env.FRONTEND_URL || 'https://sofisam-seven.vercel.app',
+      });
 
-  // 2. Customer Acknowledgement Email
-  const customerSubject = `Confirmation: SOFISAM Mandate ${args.referenceId}`;
-  const customerHtml = `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #F6F2EA; padding: 32px 16px; color: #171717;">
-      <div style="max-width: 600px; margin: 0 auto; background-color: #FFFFFF; border-radius: 12px; border: 1px solid #DED7CA; overflow: hidden; box-shadow: 0 4px 12px rgba(40,30,15,0.04);">
-        <div style="background-color: #0B0B0D; padding: 28px 32px; border-bottom: 3px solid #C7A46A; text-align: center;">
-          <div style="display: inline-block; margin-bottom: 8px;">
-            ${getEmailLogoHtml({ width: 145, height: 36, center: true })}
-          </div>
-          <p style="color: #C7A46A; font-size: 11px; text-transform: uppercase; letter-spacing: 2.5px; margin: 0; font-weight: 600;">International Strategic Consulting & Advisory</p>
-        </div>
-        <div style="padding: 36px 32px;">
-          <p style="font-size: 15px; margin: 0 0 16px 0; color: #171717;">Dear ${escapeHtml(args.name)},</p>
-          
-          <p style="font-size: 14px; line-height: 1.6; color: #66625B; margin: 0 0 16px 0;">
-            Thank you for contacting SOFISAM. We have received your ${isPrivate ? 'private office mandate inquiry' : 'inquiry'} under confidential reference <strong style="color: #171717;">${escapeHtml(args.referenceId)}</strong>.
-          </p>
-
-          <p style="font-size: 14px; line-height: 1.6; color: #66625B; margin: 0 0 24px 0;">
-            Our principals handle every strategic inquiry in strict confidence. A designated member of our advisory team will review your requirements and reach out to you directly.
-          </p>
-
-          <div style="background-color: #FBF9F5; border: 1px solid #DED7CA; border-radius: 8px; padding: 18px 20px; margin-bottom: 24px;">
-            <p style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #7A5D33; margin: 0 0 8px 0; font-weight: 700;">Submission Reference</p>
-            <div style="font-family: monospace; font-size: 13px; color: #171717; margin-bottom: 6px;">Reference ID: <strong>${escapeHtml(args.referenceId)}</strong></div>
-            ${args.areaOfInterest ? `<div style="font-size: 12px; color: #66625B;">Area of Interest: ${escapeHtml(args.areaOfInterest)}</div>` : ''}
-          </div>
-
-          <p style="font-size: 12px; line-height: 1.5; color: #66625B; margin: 0; border-top: 1px solid #DED7CA; padding-top: 20px;">
-            SOFISAM FZCO &bull; DMCC Business Centre, Jumeirah Lake Towers, Dubai, UAE.<br />
-            This communication and any attachments are confidential and intended solely for the recipient.
-          </p>
-        </div>
-      </div>
-    </div>
-  `;
-
-  const customerDispatch = await dispatchAndLogEmail({
-    recipient: args.email,
-    sender: SENDER_EMAIL,
-    subject: customerSubject,
-    emailType: 'customer_acknowledgement',
-    relatedEnquiryReference: args.referenceId,
-    executeSend: () =>
-      resend!.emails.send({
-        from: SENDER_EMAIL,
-        to: args.email,
+      const customerDispatch = await dispatchAndLogEmail({
+        recipient: args.email,
+        sender: SENDER_EMAIL,
         subject: customerSubject,
-        html: customerHtml,
-        attachments: [getEmailLogoAttachment()],
-      }),
-  });
+        emailType: 'customer_acknowledgement',
+        relatedEnquiryReference: args.referenceId,
+        executeSend: () =>
+          resend!.emails.send({
+            from: SENDER_EMAIL,
+            to: args.email,
+            subject: customerSubject,
+            html: customerHtml,
+            text: customerText,
+          }),
+      });
 
-  result.customerAcknowledgement = customerDispatch.success ? 'sent' : 'failed';
+      result.customerAcknowledgement = customerDispatch.success ? 'sent' : 'failed';
+    }
+  } catch (custErr) {
+    console.error(`[Email Dispatch] Failed customer acknowledgement for ${args.referenceId}:`, custErr);
+    result.customerAcknowledgement = 'failed';
+  }
 
   return result;
 }
 
 export async function sendNewsletterConfirmation(email: string): Promise<boolean> {
+  const normEmail = email.toLowerCase().trim();
+
+  // Prevent duplicate welcome emails if already dispatched
+  try {
+    const existingLog = await EmailLog.findOne({
+      recipient: normEmail,
+      emailType: 'newsletter_welcome',
+      status: { $in: ['queued', 'sent', 'delivered'] },
+    }).lean();
+
+    if (existingLog) {
+      console.log(`[Newsletter Dispatch] Welcome confirmation already dispatched for ${normEmail}. Skipping duplicate.`);
+      return true;
+    }
+  } catch (checkErr) {
+    console.warn('[Newsletter Dispatch] Warning checking duplicate log:', checkErr);
+  }
+
   const subject = 'Welcome to SOFISAM Strategic Insights';
   const html = `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #F6F2EA; padding: 32px 16px; color: #171717;">
@@ -474,7 +515,6 @@ export async function sendNewsletterConfirmation(email: string): Promise<boolean
         to: email,
         subject,
         html,
-        attachments: [getEmailLogoAttachment()],
       }),
   });
 
@@ -535,7 +575,65 @@ export async function sendTestContactEnquiryEmail(
         subject,
         html,
         text,
-        attachments: [getEmailLogoAttachment()],
+      });
+    },
+  });
+
+  return {
+    success: dispatch.success,
+    resendEmailId: dispatch.resendEmailId,
+    emailLogId: dispatch.emailLogId,
+    recipient,
+    sender: SENDER_EMAIL,
+    subject,
+    status: dispatch.success ? 'sent' : 'failed',
+    error: dispatch.error,
+  };
+}
+
+export interface TestThankYouOptions {
+  recipient?: string;
+  data?: Partial<ThankYouEmailData>;
+}
+
+/**
+ * Dispatches an authentic test customer thank-you acknowledgement email using the official architectural template.
+ */
+export async function sendTestThankYouEmail(
+  options?: TestThankYouOptions
+): Promise<TestContactEnquiryResult> {
+  const SENDER_EMAIL = getSenderEmail();
+  const recipient = (options?.recipient?.trim() || getAdminRecipient()).toLowerCase();
+
+  const testPayload: ThankYouEmailData = {
+    ...SAMPLE_THANK_YOU_EMAIL,
+    ...(options?.data || {}),
+    submittedAt: new Date(),
+    websiteUrl: process.env.FRONTEND_URL || 'https://sofisam-seven.vercel.app',
+  };
+
+  const subject = `[TEST] Thank You for Your Enquiry | SOFISAM | ${testPayload.referenceId}`;
+  const html = renderThankYouEmailHtml(testPayload);
+  const text = renderThankYouEmailText(testPayload);
+
+  const resend = getResendClient();
+
+  const dispatch = await dispatchAndLogEmail({
+    recipient,
+    sender: SENDER_EMAIL,
+    subject,
+    emailType: 'customer_acknowledgement',
+    relatedEnquiryReference: testPayload.referenceId,
+    executeSend: () => {
+      if (!resend) {
+        throw new Error('Resend client is not initialized (missing or invalid RESEND_API_KEY)');
+      }
+      return resend.emails.send({
+        from: SENDER_EMAIL,
+        to: recipient,
+        subject,
+        html,
+        text,
       });
     },
   });
